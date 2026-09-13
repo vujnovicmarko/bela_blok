@@ -1,9 +1,12 @@
 import 'package:bela_blok/screens/games_screen.dart';
 import 'package:bela_blok/screens/players_screen.dart';
+import 'package:bela_blok/widgets/settings_menu.dart';
 import 'package:flutter/material.dart';
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  final VoidCallback onThemeToggle;
+
+  const MainNavigation({super.key, required this.onThemeToggle});
 
   @override
   State<StatefulWidget> createState() => _MainNavigationState();
@@ -21,8 +24,12 @@ class _MainNavigationState extends State<MainNavigation> {
       appBar: AppBar(
         title: Text(_titles[_currentIndex]),
         actions: [
-          //TODO: Dovrsit settingse, proslijedit _toggleTheme
-          IconButton(onPressed: () => {}, icon: const Icon(Icons.settings)),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              showSettingsMenu(context, onThemeToggle: widget.onThemeToggle);
+            },
+          ),
         ],
       ),
       body: SafeArea(child: _screens[_currentIndex]),

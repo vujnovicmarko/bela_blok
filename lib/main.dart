@@ -51,8 +51,7 @@ class _BelaBlokState extends State<BelaBlok> {
         colorSchemeSeed: const Color(0xFF98BB6c),
         brightness: Brightness.dark,
       ),
-      //TODO: proslijedit _toggleTheme
-      home: const MainNavigation(),
+      home: MainNavigation(onThemeToggle: _toggleTheme),
     );
   }
 }
