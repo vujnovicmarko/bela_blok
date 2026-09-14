@@ -1,8 +1,21 @@
+import 'package:bela_blok/screens/base_screen.dart';
 import 'package:bela_blok/widgets/player_card.dart';
 import 'package:flutter/material.dart';
 
-class PlayersScreen extends StatelessWidget {
+class PlayersScreen extends BaseScreen {
   const PlayersScreen({super.key});
+
+  @override
+  Text getTitle(BuildContext context) => const Text("Igrači");
+
+  @override
+  Widget? getFloatingActionButton(BuildContext context) {
+    return FloatingActionButton(
+      //TODO: dodat dodavanje igraca u bazu podataka
+      onPressed: () {},
+      child: const Icon(Icons.person_add),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,4 @@
+import 'package:bela_blok/screens/base_screen.dart';
 import 'package:bela_blok/screens/games_screen.dart';
 import 'package:bela_blok/screens/players_screen.dart';
 import 'package:bela_blok/widgets/settings_menu.dart';
@@ -15,24 +16,26 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
-  final List<String> _titles = ["Partije", "Igrači"];
-  final List<Widget> _screens = [GamesScreen(), PlayersScreen()];
+  final List<BaseScreen> _screens = [GamesScreen(), PlayersScreen()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_titles[_currentIndex]),
+        title: _screens[_currentIndex].getTitle(context),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings),
             onPressed: () {
               showSettingsMenu(context, onThemeToggle: widget.onThemeToggle);
             },
+            icon: const Icon(Icons.settings),
           ),
         ],
       ),
       body: SafeArea(child: _screens[_currentIndex]),
+      floatingActionButton: _screens[_currentIndex].getFloatingActionButton(
+        context,
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
