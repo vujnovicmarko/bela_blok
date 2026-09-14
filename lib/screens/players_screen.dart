@@ -1,4 +1,5 @@
 import 'package:bela_blok/screens/base_screen.dart';
+import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/player_card.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +7,7 @@ class PlayersScreen extends BaseScreen {
   const PlayersScreen({super.key});
 
   @override
-  Text getTitle(BuildContext context) => const Text("Igrači");
+  String getTitle(BuildContext context) => "Igrači";
 
   @override
   Widget? getFloatingActionButton(BuildContext context) {
@@ -38,9 +39,24 @@ class PlayersScreen extends BaseScreen {
       {'name': 'Petra', 'games': 10, 'wins': 7},
     ];
 
-    //TODO: popravit izgled kad je prazno
     if (players.isEmpty) {
-      return const Center(child: Text('Nema spremljenih igrača.'));
+      return EmptyScreenPlaceholder(
+        icon: Icons.people,
+        title: "Nema dodanih igrača",
+        subtitle: TextSpan(
+          children: [
+            const TextSpan(text: "Pritisni "),
+            WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: Padding(
+                padding: const EdgeInsets.all(2),
+                child: Icon(Icons.person_add),
+              ),
+            ),
+            const TextSpan(text: " za novog igrača"),
+          ],
+        ),
+      );
     }
 
     //TODO: mozda dodat refresh indicator

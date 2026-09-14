@@ -22,7 +22,7 @@ class _MainNavigationState extends State<MainNavigation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _screens[_currentIndex].getTitle(context),
+        title: Text(_screens[_currentIndex].getTitle(context)),
         actions: [
           IconButton(
             onPressed: () {
