@@ -29,13 +29,13 @@ class EmptyScreenPlaceholder extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             const Spacer(flex: 1),
-            Icon(icon, size: 96),
+            Icon(icon, size: 80),
             Text(title, style: titleStyle, textAlign: TextAlign.center),
             RichText(
               textAlign: TextAlign.center,
               text: TextSpan(style: subtitleStyle, children: [subtitle]),
             ),
-            const Spacer(flex: 3),
+            const Spacer(flex: 2),
           ],
         ),
       ),

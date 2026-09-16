@@ -43,12 +43,12 @@ class _BelaBlokState extends State<BelaBlok> {
       themeMode: _themeMode,
       theme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF98BB6c),
+        colorSchemeSeed: const Color(0xFF7FB4CA),
         brightness: Brightness.light,
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF98BB6c),
+        colorSchemeSeed: const Color(0xFF7FB4CA),
         brightness: Brightness.dark,
       ),
       home: MainNavigation(onThemeToggle: _toggleTheme),
