@@ -1,4 +1,5 @@
 import 'package:bela_blok/screens/base_screen.dart';
+import 'package:bela_blok/widgets/add_player_dialog.dart';
 import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/player_card.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +13,7 @@ class PlayersScreen extends BaseScreen {
   @override
   Widget? getFloatingActionButton(BuildContext context) {
     return FloatingActionButton(
-      //TODO: dodat dodavanje igraca u bazu podataka
-      onPressed: () {},
+      onPressed: () => showAddPlayerDialog(context),
       child: const Icon(Icons.person_add),
     );
   }
@@ -21,23 +21,7 @@ class PlayersScreen extends BaseScreen {
   @override
   Widget build(BuildContext context) {
     //TODO: ucitat podatke iz baze podataka i to displayat
-    final List<Map<String, dynamic>> players = [
-      {'name': 'Ana', 'games': 12, 'wins': 8},
-      {'name': 'Ivan', 'games': 15, 'wins': 5},
-      {'name': 'Petra', 'games': 10, 'wins': 7},
-      {'name': 'Ana', 'games': 12, 'wins': 8},
-      {'name': 'Ivan', 'games': 15, 'wins': 5},
-      {'name': 'Petra', 'games': 10, 'wins': 7},
-      {'name': 'Ana', 'games': 12, 'wins': 8},
-      {'name': 'Ivan', 'games': 15, 'wins': 5},
-      {'name': 'Petra', 'games': 10, 'wins': 7},
-      {'name': 'Ana', 'games': 12, 'wins': 8},
-      {'name': 'Ivan', 'games': 15, 'wins': 5},
-      {'name': 'Petra', 'games': 10, 'wins': 7},
-      {'name': 'Ana', 'games': 12, 'wins': 8},
-      {'name': 'Ivan', 'games': 15, 'wins': 5},
-      {'name': 'Petra', 'games': 10, 'wins': 7},
-    ];
+    final List<Map<String, dynamic>> players = [];
 
     if (players.isEmpty) {
       return EmptyScreenPlaceholder(
@@ -53,7 +37,7 @@ class PlayersScreen extends BaseScreen {
                 child: Icon(Icons.person_add),
               ),
             ),
-            const TextSpan(text: " za novog igrača"),
+            const TextSpan(text: " za dodavanje igrača"),
           ],
         ),
       );

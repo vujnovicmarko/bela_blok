@@ -1,5 +1,6 @@
 import 'package:bela_blok/screens/base_screen.dart';
 import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
+import 'package:bela_blok/widgets/start_game_dialog.dart';
 import 'package:flutter/material.dart';
 
 class GamesScreen extends BaseScreen {
@@ -11,7 +12,10 @@ class GamesScreen extends BaseScreen {
   @override
   Widget? getFloatingActionButton(BuildContext context) {
     //TODO: dodat dodavanje nove igre u bazu podatkaa, prikazat alert dialog
-    return FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add));
+    return FloatingActionButton(
+      onPressed: () => showStartGameDialog(context),
+      child: const Icon(Icons.add),
+    );
   }
 
   @override
@@ -30,7 +34,7 @@ class GamesScreen extends BaseScreen {
               child: Icon(Icons.add),
             ),
           ),
-          const TextSpan(text: " za novu partiju"),
+          const TextSpan(text: " za početak partije"),
         ],
       ),
     );
