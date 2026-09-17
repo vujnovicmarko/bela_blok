@@ -68,4 +68,16 @@ class DatabaseHelper {
 
     return await db.delete(tablePlayers, where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<bool> doesPlayerExist(String name) async {
+    final db = await database;
+
+    final result = await db.query(
+      tablePlayers,
+      where: "LOWER(name) = ?",
+      whereArgs: [name.trim().toLowerCase()],
+    );
+
+    return result.isNotEmpty;
+  }
 }

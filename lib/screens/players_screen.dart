@@ -49,7 +49,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showAddPlayerDialog(context),
+        onPressed: _openAddPlayerDialog,
         child: const Icon(Icons.person_add),
       ),
       body: _buildBody(),
@@ -99,5 +99,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
         },
       ),
     );
+  }
+
+  void _openAddPlayerDialog() async {
+    final playerAdded = await showAddPlayerDialog(context);
+
+    if (playerAdded == true) {
+      _loadData();
+    }
   }
 }
