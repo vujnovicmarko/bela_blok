@@ -4,6 +4,7 @@ import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/player_card.dart';
 import 'package:bela_blok/widgets/settings_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class PlayersScreen extends StatefulWidget {
   final VoidCallback onThemeToggle;
@@ -17,6 +18,7 @@ class PlayersScreen extends StatefulWidget {
 class _PlayersScreenState extends State<PlayersScreen> {
   List<Map<String, dynamic>> _players = [];
   bool _isLoading = true;
+  bool _isFabVisible = true;
 
   @override
   void initState() {
@@ -48,11 +50,31 @@ class _PlayersScreenState extends State<PlayersScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openAddPlayerDialog,
-        child: const Icon(Icons.person_add),
+      floatingActionButton: AnimatedSlide(
+        duration: const Duration(milliseconds: 200),
+        offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
+        child: FloatingActionButton(
+          onPressed: _openAddPlayerDialog,
+          child: const Icon(Icons.person_add),
+        ),
       ),
-      body: _buildBody(),
+      body: NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          if (notification.direction == ScrollDirection.reverse &&
+              _isFabVisible) {
+            setState(() {
+              _isFabVisible = false;
+            });
+          } else if (notification.direction == ScrollDirection.forward &&
+              !_isFabVisible) {
+            setState(() {
+              _isFabVisible = true;
+            });
+          }
+          return true;
+        },
+        child: _buildBody(),
+      ),
     );
   }
 
