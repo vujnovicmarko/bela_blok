@@ -1,7 +1,5 @@
-import 'package:bela_blok/screens/base_screen.dart';
 import 'package:bela_blok/screens/games_screen.dart';
 import 'package:bela_blok/screens/players_screen.dart';
-import 'package:bela_blok/widgets/settings_menu.dart';
 import 'package:flutter/material.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -16,26 +14,15 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
-  final List<BaseScreen> _screens = [GamesScreen(), PlayersScreen()];
+  List<Widget> get _screens => [
+    GamesScreen(onThemeToggle: widget.onThemeToggle),
+    PlayersScreen(onThemeToggle: widget.onThemeToggle),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_screens[_currentIndex].getTitle(context)),
-        actions: [
-          IconButton(
-            onPressed: () {
-              showSettingsMenu(context, onThemeToggle: widget.onThemeToggle);
-            },
-            icon: const Icon(Icons.settings),
-          ),
-        ],
-      ),
       body: SafeArea(child: _screens[_currentIndex]),
-      floatingActionButton: _screens[_currentIndex].getFloatingActionButton(
-        context,
-      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
