@@ -1,5 +1,6 @@
 import 'package:bela_blok/screens/games_screen.dart';
 import 'package:bela_blok/screens/players_screen.dart';
+import 'package:bela_blok/widgets/bounce_icon.dart';
 import 'package:flutter/material.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -12,7 +13,7 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int _currentIndex = 0;
+  final ValueNotifier<int> _currentIndexNotifier = ValueNotifier<int>(0);
 
   List<Widget> get _screens => [
     GamesScreen(onThemeToggle: widget.onThemeToggle),
@@ -20,36 +21,58 @@ class _MainNavigationState extends State<MainNavigation> {
   ];
 
   @override
+  void dispose() {
+    _currentIndexNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: _screens[_currentIndex]),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+      body: SafeArea(child: _screens[_currentIndexNotifier.value]),
+      bottomNavigationBar: ValueListenableBuilder<int>(
+        valueListenable: _currentIndexNotifier,
+        builder: (context, currentIndex, child) {
+          return NavigationBar(
+            selectedIndex: currentIndex,
+            onDestinationSelected: (index) {
+              setState(() {
+                _currentIndexNotifier.value = index;
+              });
+            },
+            indicatorColor: Theme.of(context).colorScheme.primaryContainer,
+            destinations: [
+              NavigationDestination(
+                icon: BounceIcon(
+                  icon: Icons.sports_esports_outlined,
+                  index: 0,
+                  selectedIndexNotifier: _currentIndexNotifier,
+                ),
+                selectedIcon: BounceIcon(
+                  icon: Icons.sports_esports,
+                  index: 0,
+                  selectedIndexNotifier: _currentIndexNotifier,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+                label: "Partije",
+              ),
+              NavigationDestination(
+                icon: BounceIcon(
+                  icon: Icons.people_outlined,
+                  index: 1,
+                  selectedIndexNotifier: _currentIndexNotifier,
+                ),
+                selectedIcon: BounceIcon(
+                  icon: Icons.people,
+                  index: 1,
+                  selectedIndexNotifier: _currentIndexNotifier,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+                label: "Igrači",
+              ),
+            ],
+          );
         },
-        indicatorColor: Theme.of(context).colorScheme.primaryContainer,
-        // TODO: mozda dodat animacije za gumbe da se nakratko povecaju
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.sports_esports_outlined),
-            selectedIcon: Icon(
-              Icons.sports_esports,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-            label: "Partije",
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.people_outlined),
-            selectedIcon: Icon(
-              Icons.people,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-            label: "Igrači",
-          ),
-        ],
       ),
     );
   }

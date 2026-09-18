@@ -85,5 +85,6 @@ class DatabaseHelper {
     final db = await database;
 
     await db.delete(tablePlayers);
+    // TODO: dodat brisanje ostalih tablica
   }
 }
