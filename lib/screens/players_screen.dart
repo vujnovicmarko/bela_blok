@@ -23,10 +23,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    loadPlayers();
   }
 
-  Future<void> _loadData() async {
+  Future<void> loadPlayers() async {
     setState(() => _isLoading = true);
 
     final data = await DatabaseHelper.instance.getPlayers();
@@ -100,23 +100,23 @@ class _PlayersScreenState extends State<PlayersScreen> {
             const TextSpan(text: " za dodavanje igrača"),
           ],
         ),
-        onRefresh: _loadData,
+        onRefresh: loadPlayers,
       );
     }
 
     return RefreshIndicator(
-      onRefresh: () => _loadData(),
+      onRefresh: () => loadPlayers(),
       child: ListView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
         itemCount: _players.length,
         padding: const EdgeInsets.all(12),
         itemBuilder: (context, index) {
           final player = _players[index];
-
           return PlayerCard(
-            playerName: player['name'],
-            numGamesPlayed: player['numGamesPlayed'] ?? 0,
-            numWins: player['numWins'] ?? 0,
+            id: player["id"],
+            playerName: player["name"],
+            numGamesPlayed: player["numGamesPlayed"] ?? 0,
+            numWins: player["numWins"] ?? 0,
+            loadData: loadPlayers,
           );
         },
       ),
@@ -124,10 +124,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   void _openAddPlayerDialog() async {
-    final playerAdded = await showAddPlayerDialog(context);
-
-    if (playerAdded == true) {
-      _loadData();
-    }
+    await showAddPlayerDialog(context);
+    loadPlayers();
   }
 }
