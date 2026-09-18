@@ -75,7 +75,10 @@ class _DeletePlayerDialogState extends State<DeletePlayerDialog> {
           child: const Text("Odustani"),
         ),
         FilledButton(
-          style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
+          style: FilledButton.styleFrom(
+            backgroundColor: colorScheme.error,
+            foregroundColor: colorScheme.onError,
+          ),
           onPressed: _isLoading ? null : _deletePlayer,
           child: _isLoading
               ? SizedBox(

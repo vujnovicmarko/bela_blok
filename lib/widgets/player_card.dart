@@ -1,4 +1,4 @@
-import 'package:bela_blok/widgets/remove_player_dialog.dart';
+import 'package:bela_blok/widgets/delete_player_dialog.dart';
 import 'package:flutter/material.dart';
 
 class PlayerCard extends StatelessWidget {

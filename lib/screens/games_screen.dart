@@ -10,14 +10,18 @@ class GamesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //TODO: Dovrsit layout screena, za sada je samo palceholder
+    // TODO: Dovrsit layout screena, za sada je samo palceholder
     return Scaffold(
       appBar: AppBar(
         title: Text("Partije"),
         actions: [
           IconButton(
-            onPressed: () =>
-                showSettingsMenu(context, onThemeToggle: onThemeToggle),
+            onPressed: () => showSettingsMenu(
+              context,
+              onThemeToggle: onThemeToggle,
+              // TODO: dodat osvjezavanje partija
+              onAllDataDeleted: () => {},
+            ),
             icon: const Icon(Icons.settings),
           ),
         ],

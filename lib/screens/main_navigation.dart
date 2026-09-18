@@ -31,7 +31,7 @@ class _MainNavigationState extends State<MainNavigation> {
           });
         },
         indicatorColor: Theme.of(context).colorScheme.primaryContainer,
-        //TODO: mozda dodat animacije za gumbe da se nakratko povecaju
+        // TODO: mozda dodat animacije za gumbe da se nakratko povecaju
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.sports_esports_outlined),

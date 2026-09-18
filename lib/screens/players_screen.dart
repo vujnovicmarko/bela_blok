@@ -44,8 +44,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
         title: Text("Igrači"),
         actions: [
           IconButton(
-            onPressed: () =>
-                showSettingsMenu(context, onThemeToggle: widget.onThemeToggle),
+            onPressed: () => showSettingsMenu(
+              context,
+              onThemeToggle: widget.onThemeToggle,
+              onAllDataDeleted: loadPlayers,
+            ),
             icon: const Icon(Icons.settings),
           ),
         ],

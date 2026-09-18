@@ -80,4 +80,10 @@ class DatabaseHelper {
 
     return result.isNotEmpty;
   }
+
+  Future<void> deleteAllData() async {
+    final db = await database;
+
+    await db.delete(tablePlayers);
+  }
 }
