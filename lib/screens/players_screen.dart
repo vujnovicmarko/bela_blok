@@ -109,7 +109,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: () => loadPlayers(),
+      onRefresh: loadPlayers,
       child: ListView.builder(
         itemCount: _players.length,
         padding: const EdgeInsets.all(12),
