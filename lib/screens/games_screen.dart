@@ -10,7 +10,6 @@ class GamesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Dovrsit layout screena, za sada je samo palceholder
     return Scaffold(
       appBar: AppBar(
         title: Text("Partije"),
@@ -30,6 +29,7 @@ class GamesScreen extends StatelessWidget {
         onPressed: () => showStartGameDialog(context),
         child: const Icon(Icons.add),
       ),
+      // TODO: Dovrsit layout screena, za sada je samo palceholder
       body: EmptyScreenPlaceholder(
         icon: Icons.sports_esports,
         title: "Nema odigranih partija",
