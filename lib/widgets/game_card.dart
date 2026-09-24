@@ -18,6 +18,7 @@ class GameCard extends StatelessWidget {
         "${parsedDateTime.day.toString().padLeft(2, '0')}.${parsedDateTime.month.toString().padLeft(2, '0')}.${parsedDateTime.year.toString()}.";
 
     return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4),
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 8, top: 8, bottom: 8),
         child: Row(

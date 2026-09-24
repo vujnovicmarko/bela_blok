@@ -120,7 +120,7 @@ class _GamesScreenState extends State<GamesScreen> {
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           child: Column(
             children: [
               if (_activeGames.isNotEmpty) _buildActiveGames(),
