@@ -1,4 +1,5 @@
 import 'package:bela_blok/database/database_helper.dart';
+import 'package:bela_blok/models/player.dart';
 import 'package:bela_blok/widgets/add_player_dialog.dart';
 import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/player_card.dart';
@@ -16,7 +17,7 @@ class PlayersScreen extends StatefulWidget {
 }
 
 class _PlayersScreenState extends State<PlayersScreen> {
-  List<Map<String, dynamic>> _players = [];
+  List<Player> _players = [];
   bool _isLoading = true;
   bool _isFabVisible = true;
 
@@ -29,10 +30,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
   Future<void> loadPlayers() async {
     setState(() => _isLoading = true);
 
-    final data = await DatabaseHelper.instance.getPlayers();
+    final players = await DatabaseHelper.instance.getPlayers();
 
     setState(() {
-      _players = data;
+      _players = players;
       _isLoading = false;
     });
   }
@@ -114,13 +115,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         padding: const EdgeInsets.all(12),
         itemBuilder: (context, index) {
           final player = _players[index];
-          return PlayerCard(
-            id: player["id"],
-            playerName: player["name"],
-            numGamesPlayed: player["numGamesPlayed"] ?? 0,
-            numWins: player["numWins"] ?? 0,
-            loadData: loadPlayers,
-          );
+          return PlayerCard(player: player, loadData: loadPlayers);
         },
       ),
     );

@@ -1,21 +1,12 @@
+import 'package:bela_blok/models/player.dart';
 import 'package:bela_blok/widgets/delete_player_dialog.dart';
 import 'package:flutter/material.dart';
 
 class PlayerCard extends StatelessWidget {
-  final int id;
-  final String playerName;
-  final int numGamesPlayed;
-  final int numWins;
+  final Player player;
   final VoidCallback loadData;
 
-  const PlayerCard({
-    super.key,
-    required this.id,
-    required this.playerName,
-    required this.numGamesPlayed,
-    required this.numWins,
-    required this.loadData,
-  });
+  const PlayerCard({super.key, required this.player, required this.loadData});
 
   @override
   Widget build(BuildContext context) {
@@ -24,25 +15,21 @@ class PlayerCard extends StatelessWidget {
     return Card(
       child: ListTile(
         contentPadding: const EdgeInsets.only(left: 16, right: 12),
-        title: Text(playerName),
-        subtitle: Text("Partije: $numGamesPlayed   Pobjede: $numWins"),
+        title: Text(player.name),
+        subtitle: Text(
+          "Partije: ${player.numGamesPlayed}   Pobjede: ${player.numWins}   Zvanja: ${player.totalMelds}",
+        ),
         trailing: IconButton(
-          onPressed: () =>
-              _openDeletePlayerDialog(context, id, playerName, numGamesPlayed),
+          onPressed: () => _openDeletePlayerDialog(context, player),
           icon: Icon(Icons.delete_outline, color: colorScheme.error),
         ),
       ),
     );
   }
 
-  void _openDeletePlayerDialog(
-    BuildContext context,
-    int id,
-    String playerName,
-    int numGamesPlayed,
-  ) async {
+  void _openDeletePlayerDialog(BuildContext context, Player player) async {
     //TODO: obrisat sve igre u kojima je sudjelovao iz baze podataka
-    await showDeletePlayerDialog(context, id, playerName, numGamesPlayed);
+    await showDeletePlayerDialog(context, player);
     loadData();
   }
 }

@@ -1,33 +1,18 @@
 import 'package:bela_blok/database/database_helper.dart';
+import 'package:bela_blok/models/player.dart';
 import 'package:flutter/material.dart';
 
-Future<void> showDeletePlayerDialog(
-  BuildContext context,
-  int id,
-  String playerName,
-  int numGamesPlayed,
-) async {
+Future<void> showDeletePlayerDialog(BuildContext context, Player player) async {
   await showDialog<void>(
     context: context,
-    builder: (context) => DeletePlayerDialog(
-      id: id,
-      playerName: playerName,
-      numGamesPlayed: numGamesPlayed,
-    ),
+    builder: (context) => DeletePlayerDialog(player: player),
   );
 }
 
 class DeletePlayerDialog extends StatefulWidget {
-  final int id;
-  final String playerName;
-  final int numGamesPlayed;
+  final Player player;
 
-  const DeletePlayerDialog({
-    super.key,
-    required this.id,
-    required this.playerName,
-    required this.numGamesPlayed,
-  });
+  const DeletePlayerDialog({super.key, required this.player});
 
   @override
   State<StatefulWidget> createState() => _DeletePlayerDialogState();
@@ -42,7 +27,7 @@ class _DeletePlayerDialogState extends State<DeletePlayerDialog> {
     });
 
     try {
-      await DatabaseHelper.instance.deletePlayer(widget.id);
+      await DatabaseHelper.instance.deletePlayer(widget.player);
 
       if (!mounted) {
         return;
@@ -67,7 +52,7 @@ class _DeletePlayerDialogState extends State<DeletePlayerDialog> {
     return AlertDialog(
       title: const Text("Obriši igrača"),
       content: Text(
-        "Jeste li sigurni da želite obrisati igrača ${widget.playerName}? Brisanjem igrača brišu se sve partije u kojima je sudjelovao: ${widget.numGamesPlayed}.",
+        "Jeste li sigurni da želite obrisati igrača ${widget.player.name}? Brisanjem igrača brišu se sve partije u kojima je sudjelovao: ${widget.player.numGamesPlayed}.",
       ),
       actions: [
         TextButton(
