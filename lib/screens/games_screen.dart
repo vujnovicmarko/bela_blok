@@ -1,6 +1,7 @@
 import 'package:bela_blok/database/database_helper.dart';
 import 'package:bela_blok/models/game.dart';
 import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
+import 'package:bela_blok/widgets/expandable_section_header.dart';
 import 'package:bela_blok/widgets/game_card.dart';
 import 'package:bela_blok/widgets/settings_menu.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,8 @@ class _GamesScreenState extends State<GamesScreen> {
   List<Game> _finishedGames = [];
   bool _isLoading = true;
   bool _isFabVisible = true;
+  bool _isActiveGamesExpanded = true;
+  bool _isFinishedGamesExpanded = false;
 
   @override
   void initState() {
@@ -114,15 +117,68 @@ class _GamesScreenState extends State<GamesScreen> {
 
     return RefreshIndicator(
       onRefresh: loadGames,
-      // TODO: popravit da se prikazuju sve igre
-      child: ListView.builder(
-        itemCount: _activeGames.length,
-        padding: const EdgeInsets.all(12),
-        itemBuilder: (context, index) {
-          final game = _activeGames[index];
-          return GameCard(game: game, loadData: loadGames);
-        },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              if (_activeGames.isNotEmpty) _buildActiveGames(),
+              if (_activeGames.isNotEmpty && _finishedGames.isNotEmpty)
+                const SizedBox(height: 20),
+              if (_finishedGames.isNotEmpty) _buildFinishedGames(),
+            ],
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget _buildActiveGames() {
+    return Column(
+      children: [
+        ExpandableSectionHeader(
+          title: "Aktivne Partije",
+          isExpanded: _isActiveGamesExpanded,
+          onTap: () => setState(() {
+            _isActiveGamesExpanded = !_isActiveGamesExpanded;
+          }),
+        ),
+        if (_isActiveGamesExpanded)
+          ListView.builder(
+            itemCount: _activeGames.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              final game = _activeGames[index];
+              return GameCard(game: game, loadData: loadGames);
+            },
+          ),
+      ],
+    );
+  }
+
+  Widget _buildFinishedGames() {
+    return Column(
+      children: [
+        ExpandableSectionHeader(
+          title: "Završene Partije",
+          isExpanded: _isFinishedGamesExpanded,
+          onTap: () => setState(() {
+            _isFinishedGamesExpanded = !_isFinishedGamesExpanded;
+          }),
+        ),
+        if (_isFinishedGamesExpanded)
+          ListView.builder(
+            itemCount: _finishedGames.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              final game = _finishedGames[index];
+              return GameCard(game: game, loadData: loadGames);
+            },
+          ),
+      ],
     );
   }
 
