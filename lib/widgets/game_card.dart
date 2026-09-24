@@ -11,9 +11,15 @@ class GameCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
+    final parsedDateTime = DateTime.parse(game.updatedAt);
+
+    String formattedDateTime =
+        "${parsedDateTime.hour.toString().padLeft(2, '0')}:${parsedDateTime.minute.toString().padLeft(2, '0')}   "
+        "${parsedDateTime.day.toString().padLeft(2, '0')}.${parsedDateTime.month.toString().padLeft(2, '0')}.${parsedDateTime.year.toString()}.";
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 12),
+        padding: const EdgeInsets.only(left: 16, right: 8, top: 8, bottom: 8),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -23,36 +29,59 @@ class GameCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("${game.player1.name} & ${game.player3.name}"),
-                            Text("${game.team1Points}"),
-                          ],
+                      Column(
+                        children: [
+                          Text(
+                            game.player1.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            game.player3.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "${game.team1Points}",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 20),
+                      const Text(
+                        "×",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text("${game.player2.name} & ${game.player4.name}"),
-                            Text("${game.team2Points}"),
-                          ],
-                        ),
+                      const SizedBox(width: 20),
+                      Column(
+                        children: [
+                          Text(
+                            game.player2.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            game.player4.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "${game.team2Points}",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  Text(game.updatedAt),
+                  const SizedBox(height: 4),
+                  Text(formattedDateTime),
                 ],
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 8),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                FilledButton(onPressed: () => {}, child: const Text("Nastavi")),
+                FilledButton(onPressed: () {}, child: const Text("Nastavi")),
                 IconButton(
                   onPressed: () => _openDeleteGameDialog(context, game),
                   icon: Icon(Icons.delete_outlined, color: colorScheme.error),

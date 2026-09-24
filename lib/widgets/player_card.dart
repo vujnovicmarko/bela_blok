@@ -14,7 +14,7 @@ class PlayerCard extends StatelessWidget {
 
     return Card(
       child: ListTile(
-        contentPadding: const EdgeInsets.only(left: 16, right: 12),
+        contentPadding: const EdgeInsets.only(left: 16, right: 8),
         title: Text(player.name),
         subtitle: Text(
           "Partije: ${player.numGamesPlayed}   Pobjede: ${player.numWins}   Zvanja: ${player.totalMelds}",

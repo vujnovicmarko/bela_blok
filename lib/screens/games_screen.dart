@@ -114,6 +114,7 @@ class _GamesScreenState extends State<GamesScreen> {
 
     return RefreshIndicator(
       onRefresh: loadGames,
+      // TODO: popravit da se prikazuju sve igre
       child: ListView.builder(
         itemCount: _activeGames.length,
         padding: const EdgeInsets.all(12),
