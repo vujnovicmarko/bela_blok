@@ -6,8 +6,8 @@ class Game {
   final Player player2;
   final Player player3;
   final Player player4;
-  final int points1;
-  final int points2;
+  final int team1Points;
+  final int team2Points;
   final int target;
   final String updatedAt;
 
@@ -17,19 +17,20 @@ class Game {
     required this.player2,
     required this.player3,
     required this.player4,
-    this.points1 = 0,
-    this.points2 = 0,
+    this.team1Points = 0,
+    this.team2Points = 0,
     this.target = 1001,
     required this.updatedAt,
   });
 
   bool get isFinished {
-    return (points1 >= target || points2 >= target) && points1 != points2;
+    return (team1Points >= target || team2Points >= target) &&
+        team1Points != team2Points;
   }
 
   int? get winner {
     if (isFinished) {
-      if (points1 > points2) {
+      if (team1Points > team2Points) {
         return 1;
       } else {
         return 2;
@@ -71,8 +72,8 @@ class Game {
         numWins: map["p4NumWins"] as int? ?? 0,
         totalMelds: map["p4TotalMelds"] as int? ?? 0,
       ),
-      points1: map["points1"] as int? ?? 0,
-      points2: map["points2"] as int? ?? 0,
+      team1Points: map["team1Points"] as int? ?? 0,
+      team2Points: map["team2Points"] as int? ?? 0,
       target: map["target"] as int? ?? 1001,
       updatedAt: map["updatedAt"] as String,
     );
@@ -85,8 +86,8 @@ class Game {
       "player2Id": player2.id,
       "player3Id": player3.id,
       "player4Id": player4.id,
-      "points1": points1,
-      "points2": points2,
+      "team1Points": team1Points,
+      "team2Points": team2Points,
       "target": target,
       "updatedAt": updatedAt,
     };
@@ -98,8 +99,8 @@ class Game {
     Player? player2,
     Player? player3,
     Player? player4,
-    int? points1,
-    int? points2,
+    int? team1Points,
+    int? team2Points,
     int? target,
     String? updatedAt,
   }) {
@@ -109,8 +110,8 @@ class Game {
       player2: player2 ?? this.player2,
       player3: player3 ?? this.player3,
       player4: player4 ?? this.player4,
-      points1: points1 ?? this.points1,
-      points2: points2 ?? this.points2,
+      team1Points: team1Points ?? this.team1Points,
+      team2Points: team2Points ?? this.team2Points,
       target: target ?? this.target,
       updatedAt: updatedAt ?? this.updatedAt,
     );

@@ -54,8 +54,8 @@ class DatabaseHelper {
         player2Id INTEGER NOT NULL REFERENCES $tablePlayers(id) ON DELETE CASCADE,
         player3Id INTEGER NOT NULL REFERENCES $tablePlayers(id) ON DELETE CASCADE,
         player4Id INTEGER NOT NULL REFERENCES $tablePlayers(id) ON DELETE CASCADE,
-        points1 INTEGER NOT NULL DEFAULT 0,
-        points2 INTEGER NOT NULL DEFAULT 0,
+        team1Points INTEGER NOT NULL DEFAULT 0,
+        team2Points INTEGER NOT NULL DEFAULT 0,
         target INTEGER NOT NULL DEFAULT 1001,
         updatedAt TEXT NOT NULL
       )
@@ -66,6 +66,7 @@ class DatabaseHelper {
     final db = await database;
 
     await db.delete(tablePlayers);
+    await db.delete(tableGames);
     // TODO: dodat brisanje ostalih tablica
   }
 
@@ -136,7 +137,7 @@ class DatabaseHelper {
 
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
     SELECT 
-      g.id, g.points1, g.points2, g.target, g.updatedAt,
+      g.id, g.team1Points, g.team2Points, g.target, g.updatedAt,
       p1.id as p1Id, p1.name as p1Name, p1.numGamesPlayed as p1NumGamesPlayed, p1.numWins as p1NumWins, p1.totalMelds as p1TotalMelds,
       p2.id as p2Id, p2.name as p2Name, p2.numGamesPlayed as p2NumGamesPlayed, p2.numWins as p2NumWins, p2.totalMelds as p2TotalMelds,
       p3.id as p3Id, p3.name as p3Name, p3.numGamesPlayed as p3NumGamesPlayed, p3.numWins as p3NumWins, p3.totalMelds as p3TotalMelds,
