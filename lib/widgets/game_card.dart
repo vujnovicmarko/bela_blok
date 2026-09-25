@@ -18,74 +18,69 @@ class GameCard extends StatelessWidget {
         "${parsedDateTime.day.toString().padLeft(2, '0')}.${parsedDateTime.month.toString().padLeft(2, '0')}.${parsedDateTime.year.toString()}.";
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
       child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 8, top: 8, bottom: 8),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            game.player1.name,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            game.player3.name,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "${game.team1Points}",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 20),
-                      const Text(
-                        "×",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Column(
-                        children: [
-                          Text(
-                            game.player2.name,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            game.player4.name,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "${game.team2Points}",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(formattedDateTime),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
+            Text(formattedDateTime),
+            const SizedBox(height: 16),
             Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                FilledButton(onPressed: () {}, child: const Text("Nastavi")),
-                IconButton(
+                Column(
+                  children: [
+                    Text(
+                      "${game.player1.name} & ${game.player3.name}",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "${game.team1Points}",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Text("vs", style: const TextStyle(fontWeight: FontWeight.bold)),
+                Column(
+                  children: [
+                    Text(
+                      "${game.player2.name} & ${game.player4.name}",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "${game.team2Points}",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const Divider(height: 24, indent: 8, endIndent: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton.icon(
+                  style: TextButton.styleFrom(
+                    foregroundColor: colorScheme.onError,
+                    backgroundColor: colorScheme.error,
+                  ),
                   onPressed: () => _openDeleteGameDialog(context, game),
-                  icon: Icon(Icons.delete_outlined, color: colorScheme.error),
+                  icon: const Icon(Icons.delete_outline_rounded),
+                  label: const Text("Obriši"),
+                ),
+                TextButton.icon(
+                  style: TextButton.styleFrom(
+                    foregroundColor: colorScheme.onPrimary,
+                    backgroundColor: colorScheme.primary,
+                  ),
+                  onPressed: () => {},
+                  icon: const Icon(Icons.arrow_forward_rounded),
+                  label: game.isFinished
+                      ? const Text("Pregledaj")
+                      : const Text("Nastavi"),
+                  iconAlignment: IconAlignment.end,
                 ),
               ],
             ),

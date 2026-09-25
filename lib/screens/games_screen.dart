@@ -117,19 +117,26 @@ class _GamesScreenState extends State<GamesScreen> {
 
     return RefreshIndicator(
       onRefresh: loadGames,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              if (_activeGames.isNotEmpty) _buildActiveGames(),
-              if (_activeGames.isNotEmpty && _finishedGames.isNotEmpty)
-                const SizedBox(height: 20),
-              if (_finishedGames.isNotEmpty) _buildFinishedGames(),
-            ],
-          ),
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    if (_activeGames.isNotEmpty) _buildActiveGames(),
+                    if (_activeGames.isNotEmpty && _finishedGames.isNotEmpty)
+                      const SizedBox(height: 20),
+                    if (_finishedGames.isNotEmpty) _buildFinishedGames(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

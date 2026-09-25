@@ -112,7 +112,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
       onRefresh: loadPlayers,
       child: ListView.builder(
         itemCount: _players.length,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(8),
         itemBuilder: (context, index) {
           final player = _players[index];
           return PlayerCard(player: player, loadData: loadPlayers);

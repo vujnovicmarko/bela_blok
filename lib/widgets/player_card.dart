@@ -28,7 +28,6 @@ class PlayerCard extends StatelessWidget {
   }
 
   void _openDeletePlayerDialog(BuildContext context, Player player) async {
-    // NOTE: provjerit jel se brisu sve igre u kojima je igrac sudjelovao
     await showDeletePlayerDialog(context, player);
     loadData();
   }
