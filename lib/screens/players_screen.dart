@@ -18,7 +18,7 @@ class PlayersScreen extends StatefulWidget {
 
 class _PlayersScreenState extends State<PlayersScreen> {
   List<Player> _players = [];
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool _isFabVisible = true;
 
   @override

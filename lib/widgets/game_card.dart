@@ -1,4 +1,5 @@
 import 'package:bela_blok/models/game.dart';
+import 'package:bela_blok/widgets/delete_game_dialog.dart';
 import 'package:flutter/material.dart';
 
 class GameCard extends StatelessWidget {
@@ -92,7 +93,7 @@ class GameCard extends StatelessWidget {
 
   void _openDeleteGameDialog(BuildContext context, Game game) async {
     // NOTE: treba i obrisat sve runde i zvanja iz partije
-    // await showDeleteGameDialog(context, game);
+    await showDeleteGameDialog(context, game);
     loadData();
   }
 }

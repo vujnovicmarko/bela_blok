@@ -19,7 +19,7 @@ class GamesScreen extends StatefulWidget {
 class _GamesScreenState extends State<GamesScreen> {
   List<Game> _activeGames = [];
   List<Game> _finishedGames = [];
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool _isFabVisible = true;
   bool _isActiveGamesExpanded = true;
   bool _isFinishedGamesExpanded = false;
