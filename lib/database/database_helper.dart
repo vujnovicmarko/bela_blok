@@ -149,7 +149,7 @@ class DatabaseHelper {
     JOIN players p3 ON g.player3id = p3.id
     JOIN players p4 ON g.player4id = p4.id
 
-    ORDER BY g.updatedAt ASC
+    ORDER BY g.updatedAt DESC
   """);
 
     return maps.map((map) => Game.fromMap(map)).toList();

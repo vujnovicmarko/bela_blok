@@ -4,6 +4,7 @@ import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/expandable_section_header.dart';
 import 'package:bela_blok/widgets/game_card.dart';
 import 'package:bela_blok/widgets/settings_menu.dart';
+import 'package:bela_blok/widgets/start_game_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -190,7 +191,7 @@ class _GamesScreenState extends State<GamesScreen> {
   }
 
   void _openStartGameDialog() async {
-    // await showStartGameDialog(context);
+    await showStartGameDialog(context);
     loadGames();
   }
 }
