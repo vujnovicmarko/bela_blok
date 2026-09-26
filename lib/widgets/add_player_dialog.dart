@@ -1,4 +1,5 @@
 import 'package:bela_blok/database/database_helper.dart';
+import 'package:bela_blok/models/player.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showAddPlayerDialog(BuildContext context) async {
@@ -66,7 +67,7 @@ class _AddPlayerDialogState extends State<AddPlayerDialog> {
         return;
       }
 
-      await DatabaseHelper.instance.insertPlayer(name);
+      await DatabaseHelper.instance.insertPlayer(Player(name: name));
 
       if (!mounted) {
         return;

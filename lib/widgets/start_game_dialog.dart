@@ -1,4 +1,5 @@
 import 'package:bela_blok/database/database_helper.dart';
+import 'package:bela_blok/models/game.dart';
 import 'package:bela_blok/models/player.dart';
 import 'package:bela_blok/widgets/add_player_dialog.dart';
 import 'package:flutter/material.dart';
@@ -250,11 +251,14 @@ class _StartGameDialogState extends State<StartGameDialog> {
       );
 
       await DatabaseHelper.instance.insertGame(
-        player1,
-        player2,
-        player3,
-        player4,
-        target,
+        Game(
+          player1: player1,
+          player2: player2,
+          player3: player3,
+          player4: player4,
+          target: target,
+          updatedAt: DateTime.now().toIso8601String(),
+        ),
       );
 
       if (!mounted) {
