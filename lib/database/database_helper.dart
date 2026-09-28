@@ -38,14 +38,12 @@ class DatabaseHelper {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    // TODO: dodat ostale tablice
     await db.execute("""
       CREATE TABLE $tablePlayers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE NOT NULL,
         numGamesPlayed INTEGER NOT NULL DEFAULT 0,
-        numWins INTEGER NOT NULL DEFAULT 0,
-        totalMelds INTEGER NOT NULL DEFAULT 0
+        numWins INTEGER NOT NULL DEFAULT 0
       )
     """);
 
@@ -67,10 +65,14 @@ class DatabaseHelper {
       CREATE TABLE $tableRounds (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         gameId INTEGER NOT NULL REFERENCES $tableGames(id) ON DELETE CASCADE,
-        callerId INTEGER NOT NULL REFERENCES $tablePlayers(id),
-        team1Points INTEGER NOT NULL DEFAULT 0,
-        team2Points INTEGER NOT NULL DEFAULT 0,
-        stigljaTeam INTEGER NOT NULL DEFAULT 0
+        callingTeam INTEGER NOT NULL,
+        team1CardPoints INTEGER NOT NULL,
+        team2CardPoints INTEGER NOT NULL,
+        team1Melds TEXT NOT NULL,
+        team2Melds TEXT NOT NULL,
+        stigljaTeam INTEGER NOT NULL DEFAULT 0,
+        team1Points INTEGER NOT NULL,
+        team2Points INTEGER NOT NULL
       )
     """);
   }
@@ -81,7 +83,6 @@ class DatabaseHelper {
     await db.delete(tablePlayers);
     await db.delete(tableGames);
     await db.delete(tableRounds);
-    // TODO: dodat brisanje ostalih tablica
   }
 
   // NOTE: Player Table funcitons
@@ -112,11 +113,7 @@ class DatabaseHelper {
   Future<int> insertPlayer(Player player) async {
     final db = await database;
 
-    return await db.insert(
-      tablePlayers,
-      player.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.abort,
-    );
+    return await db.insert(tablePlayers, player.toMap());
   }
 
   Future<int> updatePlayer(Player player) async {
@@ -150,10 +147,10 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
         g.id, g.team1Points, g.team2Points, g.target, g.updatedAt,
-        p1.id as p1Id, p1.name as p1Name, p1.numGamesPlayed as p1NumGamesPlayed, p1.numWins as p1NumWins, p1.totalMelds as p1TotalMelds,
-        p2.id as p2Id, p2.name as p2Name, p2.numGamesPlayed as p2NumGamesPlayed, p2.numWins as p2NumWins, p2.totalMelds as p2TotalMelds,
-        p3.id as p3Id, p3.name as p3Name, p3.numGamesPlayed as p3NumGamesPlayed, p3.numWins as p3NumWins, p3.totalMelds as p3TotalMelds,
-        p4.id as p4Id, p4.name as p4Name, p4.numGamesPlayed as p4NumGamesPlayed, p4.numWins as p4NumWins, p4.totalMelds as p4TotalMelds
+        p1.id as p1Id, p1.name as p1Name, p1.numGamesPlayed as p1NumGamesPlayed, p1.numWins as p1NumWins,
+        p2.id as p2Id, p2.name as p2Name, p2.numGamesPlayed as p2NumGamesPlayed, p2.numWins as p2NumWins,
+        p3.id as p3Id, p3.name as p3Name, p3.numGamesPlayed as p3NumGamesPlayed, p3.numWins as p3NumWins,
+        p4.id as p4Id, p4.name as p4Name, p4.numGamesPlayed as p4NumGamesPlayed, p4.numWins as p4NumWins
 
       FROM $tableGames g
       JOIN $tablePlayers p1 ON g.player1id = p1.id
@@ -182,11 +179,7 @@ class DatabaseHelper {
   Future<int> insertGame(Game game) async {
     final db = await database;
 
-    return await db.insert(
-      tableGames,
-      game.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.abort,
-    );
+    return await db.insert(tableGames, game.toMap());
   }
 
   Future<int> updateGame(Game game) async {
@@ -215,21 +208,10 @@ class DatabaseHelper {
 
     final db = await database;
 
-    final List<Map<String, dynamic>> maps = await db.rawQuery(
-      """
-      SELECT
-        r.id, r.gameId, r.callerId, r.team1Points, r.team2Points, r.stigljaTeam,
-        c.name as callerName, c.numGamesPlayed as callerNumGamesPlayed,
-        c.numWins as callerNumWins, c.totalMelds as callerTotalMelds
-
-      FROM $tableRounds r
-      JOIN $tablePlayers c ON r.callerId = c.id
-
-      WHERE r.gameId = ?
-
-      ORDER BY r.id ASC
-    """,
-      [game.id],
+    final List<Map<String, dynamic>> maps = await db.query(
+      tableRounds,
+      where: "gameId = ?",
+      whereArgs: [game.id],
     );
 
     return List.generate(maps.length, (index) {
@@ -240,19 +222,24 @@ class DatabaseHelper {
   Future<int> insertRound(Round round) async {
     final db = await database;
 
-    final roundId = await db.insert(
-      tableRounds,
-      round.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.abort,
-    );
+    int roundId = 0;
 
-    final updatedGame = round.game.copyWith(
-      team1Points: round.game.team1Points + round.team1Points,
-      team2Points: round.game.team2Points + round.team2Points,
-      updatedAt: DateTime.now().toIso8601String(),
-    );
+    await db.transaction((tnx) async {
+      roundId = await tnx.insert(tableRounds, round.toMap());
 
-    await updateGame(updatedGame);
+      final updatedGame = round.game.copyWith(
+        team1Points: round.game.team1Points + round.team1Points,
+        team2Points: round.game.team2Points + round.team2Points,
+        updatedAt: DateTime.now().toIso8601String(),
+      );
+
+      await tnx.update(
+        tableGames,
+        updatedGame.toMap(),
+        where: "id = ?",
+        whereArgs: [updatedGame.id],
+      );
+    });
 
     return roundId;
   }
@@ -262,34 +249,43 @@ class DatabaseHelper {
 
     final db = await database;
 
-    final oldRound = await db.query(
-      tableRounds,
-      where: "id = ?",
-      whereArgs: [round.id],
-    );
+    int updatedRound = 0;
 
-    if (oldRound.isEmpty) return 0;
+    await db.transaction((tnx) async {
+      final oldRound = await tnx.query(
+        tableRounds,
+        where: "id = ?",
+        whereArgs: [round.id],
+      );
 
-    final oldTeam1Points = oldRound.first["team1Points"] as int;
-    final oldTeam2Points = oldRound.first["team2Points"] as int;
+      if (oldRound.isEmpty) return 0;
 
-    final updatedRound = await db.update(
-      tableRounds,
-      round.toMap(),
-      where: "id = ?",
-      whereArgs: [round.id],
-    );
+      final oldTeam1Points = oldRound.first["team1Points"] as int;
+      final oldTeam2Points = oldRound.first["team2Points"] as int;
 
-    final diffTeam1 = round.team1Points - oldTeam1Points;
-    final diffTeam2 = round.team2Points - oldTeam2Points;
+      updatedRound = await tnx.update(
+        tableRounds,
+        round.toMap(),
+        where: "id = ?",
+        whereArgs: [round.id],
+      );
 
-    final updatedGame = round.game.copyWith(
-      team1Points: round.game.team1Points + diffTeam1,
-      team2Points: round.game.team2Points + diffTeam2,
-      updatedAt: DateTime.now().toIso8601String(),
-    );
+      final diffTeam1 = round.team1Points - oldTeam1Points;
+      final diffTeam2 = round.team2Points - oldTeam2Points;
 
-    await updateGame(updatedGame);
+      final updatedGame = round.game.copyWith(
+        team1Points: round.game.team1Points + diffTeam1,
+        team2Points: round.game.team2Points + diffTeam2,
+        updatedAt: DateTime.now().toIso8601String(),
+      );
+
+      await tnx.update(
+        tableGames,
+        updatedGame.toMap(),
+        where: "id = ?",
+        whereArgs: [updatedGame.id],
+      );
+    });
 
     return updatedRound;
   }
@@ -297,19 +293,28 @@ class DatabaseHelper {
   Future<int> deleteRound(Round round) async {
     final db = await database;
 
-    final roundId = await db.delete(
-      tableRounds,
-      where: "id = ?",
-      whereArgs: [round.id],
-    );
+    int roundId = 0;
 
-    final updatedGame = round.game.copyWith(
-      team1Points: round.game.team1Points - round.team1Points,
-      team2Points: round.game.team2Points - round.team2Points,
-      updatedAt: DateTime.now().toIso8601String(),
-    );
+    await db.transaction((tnx) async {
+      roundId = await tnx.delete(
+        tableRounds,
+        where: "id = ?",
+        whereArgs: [round.id],
+      );
 
-    await updateGame(updatedGame);
+      final updatedGame = round.game.copyWith(
+        team1Points: round.game.team1Points - round.team1Points,
+        team2Points: round.game.team2Points - round.team2Points,
+        updatedAt: DateTime.now().toIso8601String(),
+      );
+
+      await tnx.update(
+        tableGames,
+        updatedGame.toMap(),
+        where: "id = ?",
+        whereArgs: [updatedGame.id],
+      );
+    });
 
     return roundId;
   }

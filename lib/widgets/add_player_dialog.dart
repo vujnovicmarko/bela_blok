@@ -67,7 +67,9 @@ class _AddPlayerDialogState extends State<AddPlayerDialog> {
         return;
       }
 
-      await DatabaseHelper.instance.insertPlayer(Player(name: name));
+      final player = Player(name: name);
+
+      await DatabaseHelper.instance.insertPlayer(player);
 
       if (!mounted) {
         return;

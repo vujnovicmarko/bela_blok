@@ -92,7 +92,6 @@ class GameCard extends StatelessWidget {
   }
 
   void _openDeleteGameDialog(BuildContext context, Game game) async {
-    // NOTE: treba i obrisat sve runde i zvanja iz partije
     await showDeleteGameDialog(context, game);
     loadData();
   }

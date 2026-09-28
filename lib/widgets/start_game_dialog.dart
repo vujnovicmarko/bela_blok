@@ -250,16 +250,16 @@ class _StartGameDialogState extends State<StartGameDialog> {
         (player) => player.id == _player4Id,
       );
 
-      await DatabaseHelper.instance.insertGame(
-        Game(
-          player1: player1,
-          player2: player2,
-          player3: player3,
-          player4: player4,
-          target: target,
-          updatedAt: DateTime.now().toIso8601String(),
-        ),
+      final game = Game(
+        player1: player1,
+        player2: player2,
+        player3: player3,
+        player4: player4,
+        target: target,
+        updatedAt: DateTime.now().toIso8601String(),
       );
+
+      await DatabaseHelper.instance.insertGame(game);
 
       if (!mounted) {
         return;
