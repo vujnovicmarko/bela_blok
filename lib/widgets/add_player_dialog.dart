@@ -2,8 +2,8 @@ import 'package:bela_blok/database/database_helper.dart';
 import 'package:bela_blok/models/player.dart';
 import 'package:flutter/material.dart';
 
-Future<void> showAddPlayerDialog(BuildContext context) async {
-  await showDialog<void>(
+Future<bool?> showAddPlayerDialog(BuildContext context) async {
+  return await showDialog<bool>(
     context: context,
     builder: (context) => const AddPlayerDialog(),
   );
@@ -75,7 +75,7 @@ class _AddPlayerDialogState extends State<AddPlayerDialog> {
         return;
       }
 
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) {
         return;
@@ -108,7 +108,7 @@ class _AddPlayerDialogState extends State<AddPlayerDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isLoading ? null : () => Navigator.pop(context),
+          onPressed: _isLoading ? null : () => Navigator.pop(context, false),
           child: const Text("Odustani"),
         ),
         FilledButton(

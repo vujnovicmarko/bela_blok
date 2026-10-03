@@ -1,5 +1,6 @@
 import 'package:bela_blok/database/database_helper.dart';
 import 'package:bela_blok/models/game.dart';
+import 'package:bela_blok/screens/game_screen.dart';
 import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/expandable_section_header.dart';
 import 'package:bela_blok/widgets/game_card.dart';
@@ -9,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class GamesScreen extends StatefulWidget {
-  final VoidCallback onThemeToggle;
+  final void Function() onThemeToggle;
 
   const GamesScreen({super.key, required this.onThemeToggle});
 
@@ -32,9 +33,11 @@ class _GamesScreenState extends State<GamesScreen> {
   }
 
   Future<void> loadGames() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if (_activeGames.isEmpty && _finishedGames.isEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     final activeGames = await DatabaseHelper.instance.getActiveGames();
     final finishedGames = await DatabaseHelper.instance.getFinishedGames();
@@ -159,7 +162,7 @@ class _GamesScreenState extends State<GamesScreen> {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               final game = _activeGames[index];
-              return GameCard(game: game, loadData: loadGames);
+              return GameCard(game: game, loadGames: loadGames);
             },
           ),
       ],
@@ -183,7 +186,7 @@ class _GamesScreenState extends State<GamesScreen> {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               final game = _finishedGames[index];
-              return GameCard(game: game, loadData: loadGames);
+              return GameCard(game: game, loadGames: loadGames);
             },
           ),
       ],
@@ -191,7 +194,15 @@ class _GamesScreenState extends State<GamesScreen> {
   }
 
   void _openStartGameDialog() async {
-    await showStartGameDialog(context);
-    loadGames();
+    final Game? createdGame = await showStartGameDialog(context);
+
+    if (createdGame != null && mounted) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => GameScreen(game: createdGame)),
+      );
+
+      await loadGames();
+    }
   }
 }

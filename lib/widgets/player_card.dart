@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 
 class PlayerCard extends StatelessWidget {
   final Player player;
-  final VoidCallback loadData;
+  final Future<void> Function() loadPlayers;
 
-  const PlayerCard({super.key, required this.player, required this.loadData});
+  const PlayerCard({
+    super.key,
+    required this.player,
+    required this.loadPlayers,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +32,10 @@ class PlayerCard extends StatelessWidget {
   }
 
   void _openDeletePlayerDialog(BuildContext context, Player player) async {
-    await showDeletePlayerDialog(context, player);
-    loadData();
+    final bool? isDeleted = await showDeletePlayerDialog(context, player);
+
+    if (isDeleted == true && context.mounted) {
+      await loadPlayers();
+    }
   }
 }

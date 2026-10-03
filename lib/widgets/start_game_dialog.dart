@@ -4,8 +4,8 @@ import 'package:bela_blok/models/player.dart';
 import 'package:bela_blok/widgets/add_player_dialog.dart';
 import 'package:flutter/material.dart';
 
-Future<void> showStartGameDialog(BuildContext context) async {
-  await showDialog(
+Future<Game?> showStartGameDialog(BuildContext context) async {
+  return await showDialog<Game>(
     context: context,
     builder: (context) => const StartGameDialog(),
   );
@@ -77,7 +77,7 @@ class _StartGameDialogState extends State<StartGameDialog> {
         TextButton(
           onPressed: _isLoadingPlayers || _isLoading
               ? null
-              : () => Navigator.pop(context),
+              : () => Navigator.pop(context, null),
           child: const Text("Odustani"),
         ),
         FilledButton(
@@ -259,13 +259,14 @@ class _StartGameDialogState extends State<StartGameDialog> {
         updatedAt: DateTime.now().toIso8601String(),
       );
 
-      await DatabaseHelper.instance.insertGame(game);
+      final createdGameId = await DatabaseHelper.instance.insertGame(game);
+      final createdGame = game.copyWith(id: createdGameId);
 
       if (!mounted) {
         return;
       }
 
-      Navigator.pop(context);
+      Navigator.pop(context, createdGame);
     } catch (e) {
       if (!mounted) {
         return;

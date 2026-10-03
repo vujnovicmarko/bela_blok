@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class PlayersScreen extends StatefulWidget {
-  final VoidCallback onThemeToggle;
+  final void Function() onThemeToggle;
 
   const PlayersScreen({super.key, required this.onThemeToggle});
 
@@ -28,7 +28,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   Future<void> loadPlayers() async {
-    setState(() => _isLoading = true);
+    if (_players.isEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     final players = await DatabaseHelper.instance.getPlayers();
 
@@ -115,14 +119,17 @@ class _PlayersScreenState extends State<PlayersScreen> {
         padding: const EdgeInsets.all(8),
         itemBuilder: (context, index) {
           final player = _players[index];
-          return PlayerCard(player: player, loadData: loadPlayers);
+          return PlayerCard(player: player, loadPlayers: loadPlayers);
         },
       ),
     );
   }
 
   void _openAddPlayerDialog() async {
-    await showAddPlayerDialog(context);
-    loadPlayers();
+    final bool? isAdded = await showAddPlayerDialog(context);
+
+    if (isAdded == true && mounted) {
+      await loadPlayers();
+    }
   }
 }

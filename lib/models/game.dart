@@ -28,7 +28,7 @@ class Game {
         team1Points != team2Points;
   }
 
-  int? get winner {
+  int? get winningTeam {
     if (isFinished) {
       if (team1Points > team2Points) {
         return 1;

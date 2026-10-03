@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ExpandableSectionHeader extends StatelessWidget {
   final String title;
   final bool isExpanded;
-  final VoidCallback onTap;
+  final void Function() onTap;
 
   const ExpandableSectionHeader({
     super.key,

@@ -2,8 +2,8 @@ import 'package:bela_blok/database/database_helper.dart';
 import 'package:bela_blok/models/game.dart';
 import 'package:flutter/material.dart';
 
-Future<void> showDeleteGameDialog(BuildContext context, Game game) async {
-  await showDialog<void>(
+Future<bool?> showDeleteGameDialog(BuildContext context, Game game) async {
+  return await showDialog<bool>(
     context: context,
     builder: (context) => DeleteGameDialog(game: game),
   );
@@ -33,7 +33,7 @@ class _DeleteGameDialogState extends State<DeleteGameDialog> {
         return;
       }
 
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) {
         return;
@@ -56,7 +56,7 @@ class _DeleteGameDialogState extends State<DeleteGameDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isLoading ? null : () => Navigator.pop(context),
+          onPressed: _isLoading ? null : () => Navigator.pop(context, false),
           child: const Text("Odustani"),
         ),
         FilledButton(

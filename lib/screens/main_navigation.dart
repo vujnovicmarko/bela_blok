@@ -4,7 +4,7 @@ import 'package:bela_blok/widgets/bounce_icon.dart';
 import 'package:flutter/material.dart';
 
 class MainNavigation extends StatefulWidget {
-  final VoidCallback onThemeToggle;
+  final void Function() onThemeToggle;
 
   const MainNavigation({super.key, required this.onThemeToggle});
 

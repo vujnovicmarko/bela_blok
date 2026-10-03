@@ -227,9 +227,24 @@ class DatabaseHelper {
     await db.transaction((tnx) async {
       roundId = await tnx.insert(tableRounds, round.toMap());
 
+      final totals = await tnx.rawQuery(
+        """
+        SELECT SUM(team1Points) AS team1TotalPoints, SUM(team2Points) AS team2TotalPoints
+
+        FROM $tableRounds
+        WHERE gameId = ?
+        """,
+        [round.game.id],
+      );
+
+      final int team1TotalPoints =
+          (totals.first["team1TotalPoints"] as int?) ?? 0;
+      final int team2TotalPoints =
+          (totals.first["team2TotalPoints"] as int?) ?? 0;
+
       final updatedGame = round.game.copyWith(
-        team1Points: round.game.team1Points + round.team1Points,
-        team2Points: round.game.team2Points + round.team2Points,
+        team1Points: team1TotalPoints,
+        team2Points: team2TotalPoints,
         updatedAt: DateTime.now().toIso8601String(),
       );
 
@@ -249,33 +264,36 @@ class DatabaseHelper {
 
     final db = await database;
 
-    int updatedRound = 0;
+    int updatedRows = 0;
 
     await db.transaction((tnx) async {
-      final oldRound = await tnx.query(
-        tableRounds,
-        where: "id = ?",
-        whereArgs: [round.id],
-      );
-
-      if (oldRound.isEmpty) return 0;
-
-      final oldTeam1Points = oldRound.first["team1Points"] as int;
-      final oldTeam2Points = oldRound.first["team2Points"] as int;
-
-      updatedRound = await tnx.update(
+      updatedRows = await tnx.update(
         tableRounds,
         round.toMap(),
         where: "id = ?",
         whereArgs: [round.id],
       );
 
-      final diffTeam1 = round.team1Points - oldTeam1Points;
-      final diffTeam2 = round.team2Points - oldTeam2Points;
+      if (updatedRows == 0) return;
+
+      final totals = await tnx.rawQuery(
+        """
+        SELECT SUM(team1Points) AS team1TotalPoints, SUM(team2Points) AS team2TotalPoints
+
+        FROM $tableRounds
+        WHERE gameId = ?
+        """,
+        [round.game.id],
+      );
+
+      final int team1TotalPoints =
+          (totals.first["team1TotalPoints"] as int?) ?? 0;
+      final int team2TotalPoints =
+          (totals.first["team2TotalPoints"] as int?) ?? 0;
 
       final updatedGame = round.game.copyWith(
-        team1Points: round.game.team1Points + diffTeam1,
-        team2Points: round.game.team2Points + diffTeam2,
+        team1Points: team1TotalPoints,
+        team2Points: team2TotalPoints,
         updatedAt: DateTime.now().toIso8601String(),
       );
 
@@ -287,24 +305,41 @@ class DatabaseHelper {
       );
     });
 
-    return updatedRound;
+    return updatedRows;
   }
 
   Future<int> deleteRound(Round round) async {
     final db = await database;
 
-    int roundId = 0;
+    int deletedRows = 0;
 
     await db.transaction((tnx) async {
-      roundId = await tnx.delete(
+      deletedRows = await tnx.delete(
         tableRounds,
         where: "id = ?",
         whereArgs: [round.id],
       );
 
+      if (deletedRows == 0) return;
+
+      final totals = await tnx.rawQuery(
+        """
+        SELECT SUM(team1Points) AS team1TotalPoints, SUM(team2Points) AS team2TotalPoints
+
+        FROM $tableRounds
+        WHERE gameId = ?
+        """,
+        [round.game.id],
+      );
+
+      final int team1TotalPoints =
+          (totals.first["team1TotalPoints"] as int?) ?? 0;
+      final int team2TotalPoints =
+          (totals.first["team2TotalPoints"] as int?) ?? 0;
+
       final updatedGame = round.game.copyWith(
-        team1Points: round.game.team1Points - round.team1Points,
-        team2Points: round.game.team2Points - round.team2Points,
+        team1Points: team1TotalPoints,
+        team2Points: team2TotalPoints,
         updatedAt: DateTime.now().toIso8601String(),
       );
 
@@ -316,6 +351,6 @@ class DatabaseHelper {
       );
     });
 
-    return roundId;
+    return deletedRows;
   }
 }

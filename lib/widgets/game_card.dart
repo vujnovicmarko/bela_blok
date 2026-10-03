@@ -1,12 +1,13 @@
 import 'package:bela_blok/models/game.dart';
+import 'package:bela_blok/screens/game_screen.dart';
 import 'package:bela_blok/widgets/delete_game_dialog.dart';
 import 'package:flutter/material.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
-  final VoidCallback loadData;
+  final Future<void> Function() loadGames;
 
-  const GameCard({super.key, required this.game, required this.loadData});
+  const GameCard({super.key, required this.game, required this.loadGames});
 
   @override
   Widget build(BuildContext context) {
@@ -27,34 +28,37 @@ class GameCard extends StatelessWidget {
             Text(formattedDateTime),
             const SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Column(
-                  children: [
-                    Text(
-                      "${game.player1.name} & ${game.player3.name}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${game.team1Points}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        "${game.player1.name} & ${game.player3.name}",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "${game.team1Points}",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
                 Text("vs", style: const TextStyle(fontWeight: FontWeight.bold)),
-                Column(
-                  children: [
-                    Text(
-                      "${game.player2.name} & ${game.player4.name}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${game.team2Points}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        "${game.player2.name} & ${game.player4.name}",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "${game.team2Points}",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -76,7 +80,16 @@ class GameCard extends StatelessWidget {
                     foregroundColor: colorScheme.onPrimary,
                     backgroundColor: colorScheme.primary,
                   ),
-                  onPressed: () => {},
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GameScreen(game: game),
+                      ),
+                    );
+
+                    loadGames();
+                  },
                   icon: const Icon(Icons.arrow_forward_rounded),
                   label: game.isFinished
                       ? const Text("Pregledaj")
@@ -92,7 +105,10 @@ class GameCard extends StatelessWidget {
   }
 
   void _openDeleteGameDialog(BuildContext context, Game game) async {
-    await showDeleteGameDialog(context, game);
-    loadData();
+    final bool? isDeleted = await showDeleteGameDialog(context, game);
+
+    if (isDeleted == true && context.mounted) {
+      await loadGames();
+    }
   }
 }

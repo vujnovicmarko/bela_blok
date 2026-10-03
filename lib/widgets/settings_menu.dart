@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 Future<bool?> showSettingsMenu(
   BuildContext context, {
-  required VoidCallback onThemeToggle,
-  required VoidCallback onAllDataDeleted,
+  required void Function() onThemeToggle,
+  required void Function() onAllDataDeleted,
 }) async {
   void openDeleteAllDataDialog(BuildContext context) async {
     final allDataDeleted = await showDeleteAllDataDialog(context);
