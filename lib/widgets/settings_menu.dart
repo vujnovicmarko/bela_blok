@@ -1,5 +1,6 @@
 import 'package:bela_blok/widgets/delete_all_data_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 Future<bool?> showSettingsMenu(
   BuildContext context, {
@@ -34,12 +35,21 @@ Future<bool?> showSettingsMenu(
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
               ),
-              leading: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              leading: Icon(
+                isDarkMode
+                    ? Symbols.dark_mode_rounded
+                    : Symbols.light_mode_rounded,
+                fill: 1,
+              ),
               title: const Text("Promijeni temu"),
               onTap: onThemeToggle,
             ),
             ListTile(
-              leading: Icon(Icons.delete_sweep, color: colorScheme.error),
+              leading: Icon(
+                Symbols.delete_sweep_rounded,
+                fill: 0,
+                color: colorScheme.error,
+              ),
               title: Text(
                 "Obriši sve podatke",
                 style: TextStyle(color: colorScheme.error),

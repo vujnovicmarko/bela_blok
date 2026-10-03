@@ -6,6 +6,7 @@ import 'package:bela_blok/widgets/player_card.dart';
 import 'package:bela_blok/widgets/settings_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class PlayersScreen extends StatefulWidget {
   final void Function() onThemeToggle;
@@ -54,7 +55,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
               onThemeToggle: widget.onThemeToggle,
               onAllDataDeleted: loadPlayers,
             ),
-            icon: const Icon(Icons.settings),
+            icon: const Icon(Symbols.settings_rounded, fill: 1),
           ),
         ],
       ),
@@ -63,7 +64,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
         offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
         child: FloatingActionButton(
           onPressed: _openAddPlayerDialog,
-          child: const Icon(Icons.person_add),
+          child: const Icon(Symbols.person_add_rounded, fill: 1),
         ),
       ),
       body: NotificationListener<UserScrollNotification>(
@@ -93,7 +94,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
     if (_players.isEmpty) {
       return EmptyScreenPlaceholder(
-        icon: Icons.people,
+        icon: Symbols.people_rounded,
         title: "Nema dodanih igrača",
         subtitle: TextSpan(
           children: [
@@ -102,7 +103,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
               alignment: PlaceholderAlignment.middle,
               child: Padding(
                 padding: const EdgeInsets.all(2),
-                child: Icon(Icons.person_add),
+                child: Icon(Symbols.person_add_rounded, fill: 1),
               ),
             ),
             const TextSpan(text: " za dodavanje igrača"),

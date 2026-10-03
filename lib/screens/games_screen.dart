@@ -8,6 +8,7 @@ import 'package:bela_blok/widgets/settings_menu.dart';
 import 'package:bela_blok/widgets/start_game_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class GamesScreen extends StatefulWidget {
   final void Function() onThemeToggle;
@@ -61,7 +62,7 @@ class _GamesScreenState extends State<GamesScreen> {
               onThemeToggle: widget.onThemeToggle,
               onAllDataDeleted: loadGames,
             ),
-            icon: const Icon(Icons.settings),
+            icon: const Icon(Symbols.settings_rounded, fill: 1),
           ),
         ],
       ),
@@ -70,7 +71,7 @@ class _GamesScreenState extends State<GamesScreen> {
         offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
         child: FloatingActionButton(
           onPressed: _openStartGameDialog,
-          child: const Icon(Icons.add),
+          child: const Icon(Symbols.add_rounded, fill: 1),
         ),
       ),
       body: NotificationListener<UserScrollNotification>(
@@ -100,7 +101,7 @@ class _GamesScreenState extends State<GamesScreen> {
 
     if (_activeGames.isEmpty && _finishedGames.isEmpty) {
       return EmptyScreenPlaceholder(
-        icon: Icons.sports_esports,
+        icon: Symbols.sports_esports_rounded,
         title: "Nema odigranih partija",
         subtitle: TextSpan(
           children: [
@@ -109,7 +110,7 @@ class _GamesScreenState extends State<GamesScreen> {
               alignment: PlaceholderAlignment.middle,
               child: Padding(
                 padding: const EdgeInsets.all(2),
-                child: Icon(Icons.add),
+                child: Icon(Symbols.add_rounded, fill: 1),
               ),
             ),
             const TextSpan(text: " za početak partije"),

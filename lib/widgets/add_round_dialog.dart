@@ -3,6 +3,7 @@ import 'package:bela_blok/models/game.dart';
 import 'package:bela_blok/models/meld.dart';
 import 'package:bela_blok/models/round.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 Future<bool?> showAddRoundDialog(BuildContext context, Game game) async {
   return await showDialog<bool>(
@@ -352,7 +353,8 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
                     InkWell(
                       onTap: () => onRemoveMeld(index),
                       child: const Icon(
-                        Icons.delete_outline,
+                        Symbols.delete_rounded,
+                        fill: 0,
                         size: 18,
                         color: Colors.red,
                       ),

@@ -2,6 +2,7 @@ import 'package:bela_blok/models/game.dart';
 import 'package:bela_blok/screens/game_screen.dart';
 import 'package:bela_blok/widgets/delete_game_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
@@ -72,7 +73,7 @@ class GameCard extends StatelessWidget {
                     backgroundColor: colorScheme.error,
                   ),
                   onPressed: () => _openDeleteGameDialog(context, game),
-                  icon: const Icon(Icons.delete_outline_rounded),
+                  icon: const Icon(Symbols.delete_rounded, fill: 0),
                   label: const Text("Obriši"),
                 ),
                 TextButton.icon(
@@ -90,7 +91,7 @@ class GameCard extends StatelessWidget {
 
                     loadGames();
                   },
-                  icon: const Icon(Icons.arrow_forward_rounded),
+                  icon: const Icon(Symbols.arrow_forward_rounded, fill: 0),
                   label: game.isFinished
                       ? const Text("Pregledaj")
                       : const Text("Nastavi"),

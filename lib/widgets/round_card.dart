@@ -1,9 +1,10 @@
 import 'package:bela_blok/models/round.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class RoundCard extends StatelessWidget {
   final Round round;
-  final VoidCallback loadData;
+  final void Function() loadData;
 
   const RoundCard({super.key, required this.round, required this.loadData});
 
@@ -17,7 +18,7 @@ class RoundCard extends StatelessWidget {
         title: Text("${round.team1Points} - ${round.team2Points}"),
         // trailing: IconButton(
         //   onPressed: () => _openDeletePlayerDialog(context, player),
-        //   icon: Icon(Icons.delete_outline, color: colorScheme.error),
+        //   icon: Icon(Symbols.delete_rounded, fill: 0, color: colorScheme.error),
         // ),
       ),
     );

@@ -3,6 +3,7 @@ import 'package:bela_blok/models/game.dart';
 import 'package:bela_blok/models/player.dart';
 import 'package:bela_blok/widgets/add_player_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 Future<Game?> showStartGameDialog(BuildContext context) async {
   return await showDialog<Game>(
@@ -153,7 +154,7 @@ class _StartGameDialogState extends State<StartGameDialog> {
                 backgroundColor: colorScheme.secondary,
               ),
               onPressed: () => _openAddPlayerDialog(),
-              icon: const Icon(Icons.person_add_rounded),
+              icon: const Icon(Symbols.person_add_rounded, fill: 1),
               label: const Text("Dodaj igrača"),
             ),
             const Divider(height: 64),

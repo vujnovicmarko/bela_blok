@@ -2,6 +2,7 @@ import 'package:bela_blok/screens/games_screen.dart';
 import 'package:bela_blok/screens/players_screen.dart';
 import 'package:bela_blok/widgets/bounce_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class MainNavigation extends StatefulWidget {
   final void Function() onThemeToggle;
@@ -44,12 +45,14 @@ class _MainNavigationState extends State<MainNavigation> {
             destinations: [
               NavigationDestination(
                 icon: BounceIcon(
-                  icon: Icons.sports_esports_outlined,
+                  icon: Symbols.sports_esports_rounded,
+                  fill: 0,
                   index: 0,
                   selectedIndexNotifier: _currentIndexNotifier,
                 ),
                 selectedIcon: BounceIcon(
-                  icon: Icons.sports_esports,
+                  icon: Symbols.sports_esports_rounded,
+                  fill: 1,
                   index: 0,
                   selectedIndexNotifier: _currentIndexNotifier,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -58,12 +61,14 @@ class _MainNavigationState extends State<MainNavigation> {
               ),
               NavigationDestination(
                 icon: BounceIcon(
-                  icon: Icons.people_outlined,
+                  icon: Symbols.people_rounded,
+                  fill: 0,
                   index: 1,
                   selectedIndexNotifier: _currentIndexNotifier,
                 ),
                 selectedIcon: BounceIcon(
-                  icon: Icons.people,
+                  icon: Symbols.people_rounded,
+                  fill: 1,
                   index: 1,
                   selectedIndexNotifier: _currentIndexNotifier,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,

@@ -6,6 +6,7 @@ import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/round_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class GameScreen extends StatefulWidget {
   final Game game;
@@ -53,7 +54,7 @@ class _GameScreenState extends State<GameScreen> {
         offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
         child: FloatingActionButton(
           onPressed: _openAddRoundDialog,
-          child: const Icon(Icons.add),
+          child: const Icon(Symbols.add_rounded, fill: 1),
         ),
       ),
       body: NotificationListener<UserScrollNotification>(
@@ -83,7 +84,7 @@ class _GameScreenState extends State<GameScreen> {
 
     if (_rounds.isEmpty) {
       return EmptyScreenPlaceholder(
-        icon: Icons.sports_esports_rounded,
+        icon: Symbols.playing_cards_rounded,
         title: "Nema odigranih rundi",
         subtitle: TextSpan(
           children: [
@@ -92,7 +93,7 @@ class _GameScreenState extends State<GameScreen> {
               alignment: PlaceholderAlignment.middle,
               child: Padding(
                 padding: const EdgeInsets.all(2),
-                child: Icon(Icons.add),
+                child: Icon(Symbols.add_rounded, fill: 1),
               ),
             ),
             const TextSpan(text: " za upis runde"),

@@ -39,7 +39,7 @@ class EmptyScreenPlaceholder extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       const Spacer(flex: 1),
-                      Icon(icon, size: 80),
+                      Icon(icon, fill: 1, size: 80),
                       Text(
                         title,
                         style: titleStyle,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class BounceIcon extends StatefulWidget {
   final IconData icon;
+  final double fill;
   final int index;
   final ValueNotifier<int> selectedIndexNotifier;
   final Color? color;
@@ -9,6 +10,7 @@ class BounceIcon extends StatefulWidget {
   const BounceIcon({
     super.key,
     required this.icon,
+    this.fill = 1,
     required this.index,
     required this.selectedIndexNotifier,
     this.color,
@@ -57,7 +59,7 @@ class _BounceIconState extends State<BounceIcon>
   Widget build(BuildContext context) {
     return ScaleTransition(
       scale: _scaleAnimation,
-      child: Icon(widget.icon, color: widget.color),
+      child: Icon(widget.icon, fill: widget.fill, color: widget.color),
     );
   }
 }

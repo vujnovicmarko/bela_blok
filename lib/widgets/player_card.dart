@@ -1,6 +1,7 @@
 import 'package:bela_blok/models/player.dart';
 import 'package:bela_blok/widgets/delete_player_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class PlayerCard extends StatelessWidget {
   final Player player;
@@ -25,7 +26,7 @@ class PlayerCard extends StatelessWidget {
         ),
         trailing: IconButton(
           onPressed: () => _openDeletePlayerDialog(context, player),
-          icon: Icon(Icons.delete_outline, color: colorScheme.error),
+          icon: Icon(Symbols.delete_rounded, fill: 0, color: colorScheme.error),
         ),
       ),
     );
