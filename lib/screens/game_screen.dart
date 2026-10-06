@@ -1,7 +1,7 @@
 import 'package:bela_blok/database/database_helper.dart';
 import 'package:bela_blok/models/game.dart';
 import 'package:bela_blok/models/round.dart';
-import 'package:bela_blok/widgets/add_round_dialog.dart';
+import 'package:bela_blok/widgets/round_dialog.dart';
 import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/round_card.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +19,8 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   List<Round> _rounds = [];
+  int _team1Points = 0;
+  int _team2Points = 0;
   bool _isLoading = false;
   bool _isFabVisible = true;
 
@@ -39,40 +41,94 @@ class _GameScreenState extends State<GameScreen> {
       (r1, r2) => (r1.roundNumber ?? 0).compareTo(r2.roundNumber ?? 0),
     );
 
+    final int team1Points = rounds.fold(
+      0,
+      (sum, round) => sum + round.team1Points,
+    );
+    final int team2Points = rounds.fold(
+      0,
+      (sum, round) => sum + round.team2Points,
+    );
+
     setState(() {
       _rounds = rounds;
+      _team1Points = team1Points;
+      _team2Points = team2Points;
       _isLoading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      floatingActionButton: AnimatedSlide(
-        duration: const Duration(milliseconds: 200),
-        offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
-        child: FloatingActionButton(
-          onPressed: _openAddRoundDialog,
-          child: const Icon(Symbols.add_rounded, fill: 1),
+    final textTheme = Theme.of(context).textTheme;
+
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 100,
+          title: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      "MI",
+                      style: textTheme.displaySmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      "$_team1Points",
+                      style: textTheme.displaySmall,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      "VI",
+                      style: textTheme.displaySmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      "$_team2Points",
+                      style: textTheme.displaySmall,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      body: NotificationListener<UserScrollNotification>(
-        onNotification: (notification) {
-          if (notification.direction == ScrollDirection.reverse &&
-              _isFabVisible) {
-            setState(() {
-              _isFabVisible = false;
-            });
-          } else if (notification.direction == ScrollDirection.forward &&
-              !_isFabVisible) {
-            setState(() {
-              _isFabVisible = true;
-            });
-          }
-          return true;
-        },
-        child: _buildBody(),
+        floatingActionButton: AnimatedSlide(
+          duration: const Duration(milliseconds: 200),
+          offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
+          child: FloatingActionButton(
+            onPressed: _openAddRoundDialog,
+            child: const Icon(Symbols.add_rounded, fill: 1),
+          ),
+        ),
+        body: NotificationListener<UserScrollNotification>(
+          onNotification: (notification) {
+            if (notification.direction == ScrollDirection.reverse &&
+                _isFabVisible) {
+              setState(() {
+                _isFabVisible = false;
+              });
+            } else if (notification.direction == ScrollDirection.forward &&
+                !_isFabVisible) {
+              setState(() {
+                _isFabVisible = true;
+              });
+            }
+            return true;
+          },
+          child: _buildBody(),
+        ),
       ),
     );
   }
@@ -110,14 +166,14 @@ class _GameScreenState extends State<GameScreen> {
         padding: const EdgeInsets.all(8),
         itemBuilder: (context, index) {
           final round = _rounds[index];
-          return RoundCard(round: round, loadData: loadRounds);
+          return RoundCard(round: round, loadRounds: loadRounds);
         },
       ),
     );
   }
 
   void _openAddRoundDialog() async {
-    final bool? isAdded = await showAddRoundDialog(context, widget.game);
+    final bool? isAdded = await showRoundDialog(context, widget.game);
 
     if (isAdded == true && mounted) {
       await loadRounds();

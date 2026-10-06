@@ -101,7 +101,7 @@ class _GamesScreenState extends State<GamesScreen> {
 
     if (_activeGames.isEmpty && _finishedGames.isEmpty) {
       return EmptyScreenPlaceholder(
-        icon: Symbols.sports_esports_rounded,
+        icon: Symbols.playing_cards_rounded,
         title: "Nema odigranih partija",
         subtitle: TextSpan(
           children: [

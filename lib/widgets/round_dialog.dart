@@ -5,31 +5,32 @@ import 'package:bela_blok/models/round.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-Future<bool?> showAddRoundDialog(BuildContext context, Game game) async {
+Future<bool?> showRoundDialog(
+  BuildContext context,
+  Game game, {
+  Round? round,
+}) async {
   return await showDialog<bool>(
     context: context,
-    builder: (context) => AddRoundDialog(game: game),
+    builder: (context) => RoundDialog(game: game, round: round),
   );
 }
 
-class AddRoundDialog extends StatefulWidget {
+class RoundDialog extends StatefulWidget {
   final Game game;
+  final Round? round;
 
-  const AddRoundDialog({super.key, required this.game});
+  const RoundDialog({super.key, required this.game, this.round});
 
   @override
-  State<StatefulWidget> createState() => _AddRoundDialogState();
+  State<StatefulWidget> createState() => _RoundDialogState();
 }
 
-class _AddRoundDialogState extends State<AddRoundDialog> {
+class _RoundDialogState extends State<RoundDialog> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _team1Controller = TextEditingController(
-    text: "0",
-  );
-  final TextEditingController _team2Controller = TextEditingController(
-    text: "0",
-  );
+  final TextEditingController _team1Controller = TextEditingController();
+  final TextEditingController _team2Controller = TextEditingController();
 
   int _callingTeam = 1;
   int _stigljaTeam = 0;
@@ -44,6 +45,16 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.round != null) {
+      _callingTeam = widget.round!.callingTeam;
+      _stigljaTeam = widget.round!.stigljaTeam;
+      _team1Controller.text = widget.round!.team1CardPoints.toString();
+      _team2Controller.text = widget.round!.team2CardPoints.toString();
+      _team1Melds.addAll(widget.round!.team1Melds);
+      _team2Melds.addAll(widget.round!.team2Melds);
+    }
+
     _team1Controller.addListener(_onTeam1Changed);
     _team2Controller.addListener(_onTeam2Changed);
   }
@@ -96,6 +107,7 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
 
     try {
       final round = Round(
+        id: widget.round?.id,
         game: widget.game,
         callingTeam: _callingTeam,
         team1CardPoints: team1CardPoints,
@@ -105,7 +117,11 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
         stigljaTeam: _stigljaTeam,
       );
 
-      await DatabaseHelper.instance.insertRound(round);
+      if (widget.round != null) {
+        await DatabaseHelper.instance.updateRound(round);
+      } else {
+        await DatabaseHelper.instance.insertRound(round);
+      }
 
       if (!mounted) {
         return;
@@ -127,6 +143,7 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16),
       title: const Text("Upiši rundu"),
       content: _buildContent(context),
       actions: [
@@ -154,19 +171,10 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          // crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // if (_errorMessage != null) ...[
-            //   Text(
-            //     _errorMessage!,
-            //     style: const TextStyle(color: Colors.red, fontSize: 13),
-            //     textAlign: TextAlign.center,
-            //   ),
-            //   const SizedBox(height: 8),
-            // ],
             _buildCallingTeamField(context),
-            const SizedBox(height: 16),
-            _buildStigljaTeamField(context),
+
             const SizedBox(height: 16),
             Row(
               children: [
@@ -177,7 +185,7 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
                     _team1Controller,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const VerticalDivider(width: 32),
                 Expanded(
                   child: _buildCardPointsField(
                     context,
@@ -187,8 +195,21 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
                 ),
               ],
             ),
+
             const Divider(height: 32),
-            // _buildMeldField(context),
+            _buildMeldField(context),
+
+            const Divider(height: 32),
+            _buildStigljaTeamField(context),
+
+            if (_errorMessage != null) ...[
+              const SizedBox(height: 16),
+              Text(
+                _errorMessage!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ],
         ),
       ),
@@ -198,7 +219,7 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
   Widget _buildCallingTeamField(BuildContext context) {
     return Column(
       children: [
-        const Text("Tko je zvao?"),
+        const Text("Tko je zvao:"),
         const SizedBox(height: 4),
         SegmentedButton<int>(
           segments: const [
@@ -209,6 +230,7 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
           onSelectionChanged: (val) {
             setState(() => _callingTeam = val.first);
           },
+          showSelectedIcon: false,
         ),
       ],
     );
@@ -217,7 +239,7 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
   Widget _buildStigljaTeamField(BuildContext context) {
     return Column(
       children: [
-        const Text("Štiglja?"),
+        const Text("Štiglja:"),
         const SizedBox(height: 4),
         SegmentedButton<int>(
           segments: const [
@@ -239,6 +261,7 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
               }
             });
           },
+          showSelectedIcon: false,
         ),
       ],
     );
@@ -249,6 +272,8 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
     String label,
     TextEditingController controller,
   ) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       children: [
         Text(label),
@@ -258,7 +283,11 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
           keyboardType: TextInputType.number,
           enabled: _stigljaTeam == 0,
           textAlign: TextAlign.center,
-          decoration: const InputDecoration(border: OutlineInputBorder()),
+          style: textTheme.headlineLarge,
+          decoration: InputDecoration(
+            hintText: "0",
+            border: OutlineInputBorder(),
+          ),
           validator: (points) => _validateCardPoints(points),
         ),
       ],
@@ -269,7 +298,7 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
     return Column(
       children: [
         const Text("Zvanja"),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -277,17 +306,18 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
               child: _buildMeldSection(
                 _team1Melds,
                 onAddMeld: (meld) => setState(() => _team1Melds.add(meld)),
-                onRemoveMeld: (index) =>
-                    setState(() => _team1Melds.removeAt(index)),
+                onRemoveMeld: (meld) =>
+                    setState(() => _team1Melds.remove(meld)),
+                iconOnLeft: true,
               ),
             ),
-            const VerticalDivider(),
             Expanded(
               child: _buildMeldSection(
                 _team2Melds,
                 onAddMeld: (meld) => setState(() => _team2Melds.add(meld)),
-                onRemoveMeld: (index) =>
-                    setState(() => _team2Melds.removeAt(index)),
+                onRemoveMeld: (meld) =>
+                    setState(() => _team2Melds.remove(meld)),
+                iconOnLeft: false,
               ),
             ),
           ],
@@ -299,72 +329,89 @@ class _AddRoundDialogState extends State<AddRoundDialog> {
   Widget _buildMeldSection(
     List<Meld> teamMelds, {
     required Function(Meld) onAddMeld,
-    required Function(int) onRemoveMeld,
+    required Function(Meld) onRemoveMeld,
+    bool iconOnLeft = true,
   }) {
-    return Column(
-      children: [
-        Wrap(
-          spacing: 4,
-          runSpacing: 4,
-          alignment: WrapAlignment.center,
-          children: Meld.values.map((meld) {
-            return ActionChip(
-              labelPadding: const EdgeInsets.symmetric(horizontal: 2),
-              label: Text(
-                "+${meld.value}",
-                style: const TextStyle(fontSize: 11),
-              ),
-              onPressed: () => onAddMeld(meld),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 8),
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-        // Lista dodanih zvanja s kantom za smeće
-        if (teamMelds.isEmpty)
-          const Text(
-            "Nema zvanja",
-            style: TextStyle(fontSize: 12, color: Colors.grey),
-          )
-        else
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: teamMelds.length,
-            itemBuilder: (context, index) {
-              final meld = teamMelds[index];
-              return Container(
-                margin: const EdgeInsets.symmetric(vertical: 2),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(6),
+    return Column(
+      children: Meld.values.map((meld) {
+        final count = teamMelds.where((m) => m == meld).length;
+
+        return Row(
+          children: [
+            iconOnLeft
+                ? SizedBox(
+                    width: 40,
+                    child: count > 0
+                        ? IconButton(
+                            icon: const Icon(
+                              Symbols.delete_rounded,
+                              fill: 0,
+                              size: 20,
+                            ),
+                            color: colorScheme.error,
+                            onPressed: () => onRemoveMeld(meld),
+                          )
+                        : null,
+                  )
+                : SizedBox(
+                    width: 40,
+                    child: count > 0
+                        ? Text(
+                            "x$count",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          )
+                        : null,
+                  ),
+
+            const SizedBox(width: 4),
+
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () => onAddMeld(meld),
+                style: OutlinedButton.styleFrom(
+                  textStyle: textTheme.labelMedium,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "${meld.value}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => onRemoveMeld(index),
-                      child: const Icon(
-                        Symbols.delete_rounded,
-                        fill: 0,
-                        size: 18,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-      ],
+                child: Text("${meld.value}"),
+              ),
+            ),
+
+            const SizedBox(width: 4),
+
+            iconOnLeft
+                ? SizedBox(
+                    width: 40,
+                    child: count > 0
+                        ? Text(
+                            "x$count",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          )
+                        : null,
+                  )
+                : SizedBox(
+                    width: 40,
+                    child: count > 0
+                        ? IconButton(
+                            icon: const Icon(
+                              Symbols.delete_rounded,
+                              fill: 0,
+                              size: 20,
+                            ),
+                            color: colorScheme.error,
+                            onPressed: () => onRemoveMeld(meld),
+                          )
+                        : null,
+                  ),
+          ],
+        );
+      }).toList(),
     );
   }
 

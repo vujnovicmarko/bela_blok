@@ -45,13 +45,13 @@ class _MainNavigationState extends State<MainNavigation> {
             destinations: [
               NavigationDestination(
                 icon: BounceIcon(
-                  icon: Symbols.sports_esports_rounded,
+                  icon: Symbols.playing_cards_rounded,
                   fill: 0,
                   index: 0,
                   selectedIndexNotifier: _currentIndexNotifier,
                 ),
                 selectedIcon: BounceIcon(
-                  icon: Symbols.sports_esports_rounded,
+                  icon: Symbols.playing_cards_rounded,
                   fill: 1,
                   index: 0,
                   selectedIndexNotifier: _currentIndexNotifier,
