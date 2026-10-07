@@ -48,8 +48,28 @@ class _DeleteAllDataDialogState extends State<DeleteAllDataDialog> {
 
     return AlertDialog(
       title: const Text("Obriši sve podatke"),
-      content: Text(
-        "Jeste li sigurni da želite obrisati sve podatke? Ova akcija je nepovratna.",
+      content: Text.rich(
+        TextSpan(
+          children: [
+            const TextSpan(text: "Jeste li sigurni da želite "),
+            TextSpan(
+              text: "obrisati sve podatke",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.error,
+              ),
+            ),
+            const TextSpan(text: "? Ova akcija je "),
+            TextSpan(
+              text: "nepovratna",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.error,
+              ),
+            ),
+            const TextSpan(text: "."),
+          ],
+        ),
       ),
       actions: [
         TextButton(

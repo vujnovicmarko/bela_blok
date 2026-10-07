@@ -159,7 +159,11 @@ class _GameScreenState extends State<GameScreen> {
         padding: const EdgeInsets.all(8),
         itemBuilder: (context, index) {
           final round = _rounds[index];
-          return RoundCard(round: round, loadRounds: loadRounds);
+          return RoundCard(
+            round: round,
+            loadRounds: loadRounds,
+            gameFinished: _game.isFinished,
+          );
         },
       ),
     );

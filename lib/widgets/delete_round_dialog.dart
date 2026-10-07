@@ -51,7 +51,29 @@ class _DeleteRoundDialogState extends State<DeleteRoundDialog> {
 
     return AlertDialog(
       title: const Text("Obriši rundu"),
-      content: Text("Jeste li sigurni da želite obrisati rundu?"),
+      content: Text.rich(
+        TextSpan(
+          children: [
+            const TextSpan(text: "Jeste li sigurni da želite "),
+            TextSpan(
+              text: "obrisati",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.error,
+              ),
+            ),
+            const TextSpan(text: " ovu rundu? Ova akcija je "),
+            TextSpan(
+              text: "nepovratna",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.error,
+              ),
+            ),
+            const TextSpan(text: "."),
+          ],
+        ),
+      ),
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context, false),

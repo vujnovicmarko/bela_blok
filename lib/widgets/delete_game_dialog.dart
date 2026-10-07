@@ -51,8 +51,38 @@ class _DeleteGameDialogState extends State<DeleteGameDialog> {
 
     return AlertDialog(
       title: const Text("Obriši partiju"),
-      content: Text(
-        "Jeste li sigurni da želite obrisati ovu partiju? Brisanjem ove partije mijenjaju se statistike igrača koji su sudjelovali u njoj.",
+      content: Text.rich(
+        TextSpan(
+          children: [
+            const TextSpan(text: "Jeste li sigurni da želite "),
+            TextSpan(
+              text: "obrisati ovu partiju",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.error,
+              ),
+            ),
+            const TextSpan(text: "? Brisanjem ove partije "),
+            TextSpan(
+              text: "mijenjaju",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.tertiary,
+              ),
+            ),
+            const TextSpan(
+              text: " se statistike igrača koji su sudjelovali u njoj. Ova akcija je ",
+            ),
+            TextSpan(
+              text: "nepovratna",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.error,
+              ),
+            ),
+            const TextSpan(text: "."),
+          ],
+        ),
       ),
       actions: [
         TextButton(

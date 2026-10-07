@@ -7,8 +7,14 @@ import 'package:material_symbols_icons/symbols.dart';
 class RoundCard extends StatelessWidget {
   final Round round;
   final void Function() loadRounds;
+  final bool gameFinished;
 
-  const RoundCard({super.key, required this.round, required this.loadRounds});
+  const RoundCard({
+    super.key,
+    required this.round,
+    required this.loadRounds,
+    required this.gameFinished,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +25,11 @@ class RoundCard extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 8),
         leading: IconButton(
-          onPressed: () => _openEditRoundDialog(context, round),
-          icon: Icon(
-            Symbols.edit_rounded,
-            fill: 0,
-            color: colorScheme.tertiary,
-          ),
+          onPressed: gameFinished
+              ? null
+              : () => _openEditRoundDialog(context, round),
+          color: colorScheme.tertiary,
+          icon: Icon(Symbols.edit_rounded, fill: 0),
         ),
         title: Row(
           children: [
@@ -53,8 +58,11 @@ class RoundCard extends StatelessWidget {
           ],
         ),
         trailing: IconButton(
-          onPressed: () => _openDeleteRoundDialog(context, round),
-          icon: Icon(Symbols.delete_rounded, fill: 0, color: colorScheme.error),
+          onPressed: gameFinished
+              ? null
+              : () => _openDeleteRoundDialog(context, round),
+          color: colorScheme.error,
+          icon: Icon(Symbols.delete_rounded, fill: 0),
         ),
       ),
     );
