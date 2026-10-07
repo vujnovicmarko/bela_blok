@@ -26,12 +26,7 @@ class Player {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      if (id != null) "id": id,
-      "name": name,
-      "numGamesPlayed": numGamesPlayed,
-      "numWins": numWins,
-    };
+    return {if (id != null) "id": id, "name": name};
   }
 
   Player copyWith({int? id, String? name, int? numGamesPlayed, int? numWins}) {

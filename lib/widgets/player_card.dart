@@ -22,7 +22,7 @@ class PlayerCard extends StatelessWidget {
         contentPadding: const EdgeInsets.only(left: 16, right: 8),
         title: Text(player.name),
         subtitle: Text(
-          "Partije: ${player.numGamesPlayed}   Pobjede: ${player.numWins}   Postotak pobjeda: ${player.winPercentage}",
+          "Partije: ${player.numGamesPlayed}   Postotak pobjeda: ${player.winPercentage}",
         ),
         trailing: IconButton(
           onPressed: () => _openDeletePlayerDialog(context, player),

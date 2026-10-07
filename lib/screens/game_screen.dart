@@ -170,6 +170,10 @@ class _GameScreenState extends State<GameScreen> {
 
     if (isAdded == true && mounted) {
       await loadRounds();
+
+      if (_game.isFinished && mounted) {
+        Navigator.pop(context);
+      }
     }
   }
 }

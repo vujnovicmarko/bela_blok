@@ -41,9 +41,7 @@ class DatabaseHelper {
     await db.execute("""
       CREATE TABLE $tablePlayers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT UNIQUE NOT NULL,
-        numGamesPlayed INTEGER NOT NULL DEFAULT 0,
-        numWins INTEGER NOT NULL DEFAULT 0
+        name TEXT UNIQUE NOT NULL
       )
     """);
 
@@ -90,12 +88,27 @@ class DatabaseHelper {
   Future<List<Player>> getPlayers() async {
     final db = await database;
 
-    final List<Map<String, dynamic>> maps = await db.query(
-      tablePlayers,
-      orderBy: "name ASC",
-    );
+    final List<Map<String, dynamic>> maps = await db.rawQuery("""
+      SELECT
+        p.*,
+        COUNT(DISTINCT g_all.id) as numGamesPlayed,
+        COUNT(DISTINCT g_won.id) as numWins
+      FROM $tablePlayers p
+      LEFT JOIN $tableGames g_all ON
+        ((g_all.team1Points >= g_all.target OR g_all.team2Points >= g_all.target) AND g_all.team1Points <> g_all.team2Points)
+        AND (g_all.player1id = p.id OR g_all.player2id = p.id OR g_all.player3id = p.id OR g_all.player4id = p.id)
+      LEFT JOIN $tableGames g_won ON
+        ((g_won.team1Points >= g_won.target OR g_won.team2Points >= g_won.target) AND g_won.team1Points <> g_won.team2Points)
+        AND (
+          (g_won.team1Points > g_won.team2Points AND (g_won.player1id = p.id OR g_won.player3id = p.id))
+          OR
+          (g_won.team2Points > g_won.team1Points AND (g_won.player2id = p.id OR g_won.player4id = p.id))
+        )
+      GROUP BY p.id
+      ORDER BY p.name ASC
+    """);
 
-    return maps.map((map) => Player.fromMap(map)).toList();
+    return maps.map((m) => Player.fromMap(m)).toList();
   }
 
   Future<bool> doesPlayerExist(String name) async {
@@ -147,10 +160,10 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
         g.id, g.team1Points, g.team2Points, g.target, g.updatedAt,
-        p1.id as p1Id, p1.name as p1Name, p1.numGamesPlayed as p1NumGamesPlayed, p1.numWins as p1NumWins,
-        p2.id as p2Id, p2.name as p2Name, p2.numGamesPlayed as p2NumGamesPlayed, p2.numWins as p2NumWins,
-        p3.id as p3Id, p3.name as p3Name, p3.numGamesPlayed as p3NumGamesPlayed, p3.numWins as p3NumWins,
-        p4.id as p4Id, p4.name as p4Name, p4.numGamesPlayed as p4NumGamesPlayed, p4.numWins as p4NumWins
+        p1.id as p1Id, p1.name as p1Name,
+        p2.id as p2Id, p2.name as p2Name,
+        p3.id as p3Id, p3.name as p3Name,
+        p4.id as p4Id, p4.name as p4Name
 
       FROM $tableGames g
       JOIN $tablePlayers p1 ON g.player1id = p1.id
@@ -171,10 +184,10 @@ class DatabaseHelper {
       """
       SELECT
         g.id, g.team1Points, g.team2Points, g.target, g.updatedAt,
-        p1.id as p1Id, p1.name as p1Name, p1.numGamesPlayed as p1NumGamesPlayed, p1.numWins as p1NumWins,
-        p2.id as p2Id, p2.name as p2Name, p2.numGamesPlayed as p2NumGamesPlayed, p2.numWins as p2NumWins,
-        p3.id as p3Id, p3.name as p3Name, p3.numGamesPlayed as p3NumGamesPlayed, p3.numWins as p3NumWins,
-        p4.id as p4Id, p4.name as p4Name, p4.numGamesPlayed as p4NumGamesPlayed, p4.numWins as p4NumWins
+        p1.id as p1Id, p1.name as p1Name,
+        p2.id as p2Id, p2.name as p2Name,
+        p3.id as p3Id, p3.name as p3Name,
+        p4.id as p4Id, p4.name as p4Name
 
       FROM $tableGames g
       JOIN $tablePlayers p1 ON g.player1id = p1.id
