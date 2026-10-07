@@ -4,6 +4,7 @@ import 'package:bela_blok/models/player.dart';
 import 'package:bela_blok/widgets/add_player_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<Game?> showStartGameDialog(BuildContext context) async {
   return await showDialog<Game>(
@@ -30,6 +31,12 @@ class _StartGameDialogState extends State<StartGameDialog> {
   int? _player3Id;
   int? _player4Id;
 
+  static const String _player1IdKey = "player1_id";
+  static const String _player2IdKey = "player2_id";
+  static const String _player3IdKey = "player3_id";
+  static const String _player4IdKey = "player4_id";
+  static const String _targetKey = "target";
+
   bool _isLoadingPlayers = true;
   bool _isLoading = false;
 
@@ -38,7 +45,7 @@ class _StartGameDialogState extends State<StartGameDialog> {
   @override
   void initState() {
     super.initState();
-    _loadPlayers();
+    _loadData();
   }
 
   @override
@@ -47,13 +54,48 @@ class _StartGameDialogState extends State<StartGameDialog> {
     super.dispose();
   }
 
-  Future<void> _loadPlayers() async {
+  Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
     final players = await DatabaseHelper.instance.getPlayers();
+    final validPlayerIds = players.map((player) => player.id).toSet();
+
+    final player1Id = prefs.getInt(_player1IdKey);
+    final player2Id = prefs.getInt(_player2IdKey);
+    final player3Id = prefs.getInt(_player3IdKey);
+    final player4Id = prefs.getInt(_player4IdKey);
+
+    final target = prefs.getInt(_targetKey);
+
+    if (!mounted) return;
+
+    if (target != null) {
+      _targetController.text = target.toString();
+    }
 
     setState(() {
       _allPlayers = players;
+      _player1Id = validPlayerIds.contains(player1Id) ? player1Id : null;
+      _player2Id = validPlayerIds.contains(player2Id) ? player2Id : null;
+      _player3Id = validPlayerIds.contains(player3Id) ? player3Id : null;
+      _player4Id = validPlayerIds.contains(player4Id) ? player4Id : null;
       _isLoadingPlayers = false;
     });
+  }
+
+  Future<void> _savePlayerId(String key, int? id) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (id != null) {
+      await prefs.setInt(key, id);
+    } else {
+      await prefs.remove(key);
+    }
+  }
+
+  Future<void> _saveTarget(int target) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt(_targetKey, target);
   }
 
   List<Player> _getAvailablePlayers(int? selectedPlayerId) {
@@ -117,17 +159,19 @@ class _StartGameDialogState extends State<StartGameDialog> {
             _buildPlayerDropdown(
               label: "Igrač 1",
               selectedPlayerId: _player1Id,
-              onChanged: (selectedPlayerId) => setState(() {
-                _player1Id = selectedPlayerId;
-              }),
+              onChanged: (id) {
+                setState(() => _player1Id = id);
+                _savePlayerId(_player1IdKey, id);
+              },
             ),
             const SizedBox(height: 8),
             _buildPlayerDropdown(
               label: "Igrač 3",
               selectedPlayerId: _player3Id,
-              onChanged: (selectedPlayerId) => setState(() {
-                _player3Id = selectedPlayerId;
-              }),
+              onChanged: (id) {
+                setState(() => _player3Id = id);
+                _savePlayerId(_player3IdKey, id);
+              },
             ),
             const SizedBox(height: 32),
             const Text("Tim 2", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -135,17 +179,19 @@ class _StartGameDialogState extends State<StartGameDialog> {
             _buildPlayerDropdown(
               label: "Igrač 2",
               selectedPlayerId: _player2Id,
-              onChanged: (selectedPlayerId) => setState(() {
-                _player2Id = selectedPlayerId;
-              }),
+              onChanged: (id) {
+                setState(() => _player2Id = id);
+                _savePlayerId(_player2IdKey, id);
+              },
             ),
             const SizedBox(height: 8),
             _buildPlayerDropdown(
               label: "Igrač 4",
               selectedPlayerId: _player4Id,
-              onChanged: (selectedPlayerId) => setState(() {
-                _player4Id = selectedPlayerId;
-              }),
+              onChanged: (id) {
+                setState(() => _player4Id = id);
+                _savePlayerId(_player4IdKey, id);
+              },
             ),
             const SizedBox(height: 32),
             TextButton.icon(
@@ -170,22 +216,33 @@ class _StartGameDialogState extends State<StartGameDialog> {
     required int? selectedPlayerId,
     required ValueChanged<int?> onChanged,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final availablePlayers = _getAvailablePlayers(selectedPlayerId);
 
     return Padding(
       padding: const EdgeInsets.only(left: 4, right: 12),
-      child: DropdownButtonFormField<int>(
+      child: DropdownButtonFormField<int?>(
         initialValue: selectedPlayerId,
         decoration: InputDecoration(
           labelText: label,
           border: const OutlineInputBorder(),
         ),
-        items: availablePlayers.map((player) {
-          return DropdownMenuItem<int>(
-            value: player.id,
-            child: Text(player.name, overflow: TextOverflow.ellipsis),
-          );
-        }).toList(),
+        items: [
+          DropdownMenuItem<int?>(
+            value: null,
+            child: Text(
+              "Nije odabran",
+              style: TextStyle(color: colorScheme.outline),
+            ),
+          ),
+          ...availablePlayers.map((player) {
+            return DropdownMenuItem<int?>(
+              value: player.id,
+              child: Text(player.name, overflow: TextOverflow.ellipsis),
+            );
+          }),
+        ],
         validator: (value) {
           if (value == null) {
             return "$label nije odabran";
@@ -208,6 +265,13 @@ class _StartGameDialogState extends State<StartGameDialog> {
           border: const OutlineInputBorder(),
           errorText: _errorMessage,
         ),
+        onChanged: (target) {
+          final parsedTarget = int.tryParse(target.trim());
+
+          if (parsedTarget != null && parsedTarget > 0) {
+            _saveTarget(parsedTarget);
+          }
+        },
         validator: (target) {
           if (target == null || target.trim().isEmpty) {
             return "Unesite broj bodova";
@@ -285,24 +349,26 @@ class _StartGameDialogState extends State<StartGameDialog> {
 
     await showAddPlayerDialog(context);
 
-    await _loadPlayers();
+    await _loadData();
 
     final newPlayer = _allPlayers
         .where((player) => !oldPlayerIds.contains(player.id))
         .firstOrNull;
 
     if (newPlayer != null) {
-      setState(() {
-        if (_player1Id == null) {
-          _player1Id = newPlayer.id;
-        } else if (_player3Id == null) {
-          _player3Id = newPlayer.id;
-        } else if (_player2Id == null) {
-          _player2Id = newPlayer.id;
-        } else if (_player4Id == null) {
-          _player4Id = newPlayer.id;
-        }
-      });
+      if (_player1Id == null) {
+        setState(() => _player1Id = newPlayer.id);
+        _savePlayerId(_player1IdKey, newPlayer.id);
+      } else if (_player3Id == null) {
+        setState(() => _player3Id = newPlayer.id);
+        _savePlayerId(_player3IdKey, newPlayer.id);
+      } else if (_player2Id == null) {
+        setState(() => _player2Id = newPlayer.id);
+        _savePlayerId(_player2IdKey, newPlayer.id);
+      } else if (_player4Id == null) {
+        setState(() => _player4Id = newPlayer.id);
+        _savePlayerId(_player4IdKey, newPlayer.id);
+      }
     }
   }
 }

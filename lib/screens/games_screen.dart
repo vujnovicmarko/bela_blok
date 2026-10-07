@@ -9,6 +9,7 @@ import 'package:bela_blok/widgets/start_game_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GamesScreen extends StatefulWidget {
   final void Function() onThemeToggle;
@@ -22,15 +23,61 @@ class GamesScreen extends StatefulWidget {
 class _GamesScreenState extends State<GamesScreen> {
   List<Game> _activeGames = [];
   List<Game> _finishedGames = [];
-  bool _isLoading = false;
-  bool _isFabVisible = true;
+
   bool _isActiveGamesExpanded = true;
   bool _isFinishedGamesExpanded = false;
+
+  bool _isLoading = false;
+  bool _isFabVisible = true;
+
+  static const String _isActiveGamesExpandedKey = "is_active_games_expanded";
+  static const String _isFinishedGamesExpandedKey =
+      "is_finished_games_expanded";
 
   @override
   void initState() {
     super.initState();
+    _loadExpandedStates();
     loadGames();
+  }
+
+  Future<void> _loadExpandedStates() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (!mounted) return;
+
+    setState(() {
+      _isActiveGamesExpanded = prefs.getBool(_isActiveGamesExpandedKey) ?? true;
+      _isFinishedGamesExpanded =
+          prefs.getBool(_isFinishedGamesExpandedKey) ?? false;
+    });
+  }
+
+  Future<void> _toggleIsActiveGamesExpanded() async {
+    final newIsActiveGamesExpanded = !_isActiveGamesExpanded;
+
+    setState(() {
+      _isActiveGamesExpanded = newIsActiveGamesExpanded;
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool(_isActiveGamesExpandedKey, newIsActiveGamesExpanded);
+  }
+
+  Future<void> _toggleIsFinishedGamesExpanded() async {
+    final newIsFinishedGamesExpanded = !_isFinishedGamesExpanded;
+
+    setState(() {
+      _isFinishedGamesExpanded = newIsFinishedGamesExpanded;
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool(
+      _isFinishedGamesExpandedKey,
+      newIsFinishedGamesExpanded,
+    );
   }
 
   Future<void> loadGames() async {
@@ -152,9 +199,7 @@ class _GamesScreenState extends State<GamesScreen> {
         ExpandableSectionHeader(
           title: "Aktivne Partije",
           isExpanded: _isActiveGamesExpanded,
-          onTap: () => setState(() {
-            _isActiveGamesExpanded = !_isActiveGamesExpanded;
-          }),
+          onTap: _toggleIsActiveGamesExpanded,
         ),
         if (_isActiveGamesExpanded)
           ListView.builder(
@@ -176,9 +221,7 @@ class _GamesScreenState extends State<GamesScreen> {
         ExpandableSectionHeader(
           title: "Završene Partije",
           isExpanded: _isFinishedGamesExpanded,
-          onTap: () => setState(() {
-            _isFinishedGamesExpanded = !_isFinishedGamesExpanded;
-          }),
+          onTap: _toggleIsFinishedGamesExpanded,
         ),
         if (_isFinishedGamesExpanded)
           ListView.builder(
