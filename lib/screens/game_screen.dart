@@ -6,6 +6,7 @@ import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/round_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_confetti/flutter_confetti.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class GameScreen extends StatefulWidget {
@@ -96,7 +97,17 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ),
         floatingActionButton: _game.isFinished
-            ? null
+            ? AnimatedSlide(
+                duration: const Duration(milliseconds: 200),
+                offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
+                child: FloatingActionButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Icon(
+                    Symbols.subdirectory_arrow_left_rounded,
+                    fill: 1,
+                  ),
+                ),
+              )
             : AnimatedSlide(
                 duration: const Duration(milliseconds: 200),
                 offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
@@ -176,7 +187,40 @@ class _GameScreenState extends State<GameScreen> {
       await loadRounds();
 
       if (_game.isFinished && mounted) {
-        Navigator.pop(context);
+        Confetti.launch(
+          context,
+          options: const ConfettiOptions(
+            particleCount: 200,
+            spread: 70,
+            particleDuration: Duration(seconds: 3),
+            y: 0.75,
+          ),
+        );
+
+        await Future.delayed(const Duration(seconds: 1));
+
+        if (!mounted) return;
+
+        Confetti.launch(
+          context,
+          options: const ConfettiOptions(
+            particleCount: 200,
+            spread: 70,
+            particleDuration: Duration(seconds: 3),
+            y: 0.75,
+            x: 0.25,
+          ),
+        );
+        Confetti.launch(
+          context,
+          options: const ConfettiOptions(
+            particleCount: 200,
+            spread: 70,
+            particleDuration: Duration(seconds: 3),
+            y: 0.75,
+            x: 0.75,
+          ),
+        );
       }
     }
   }
