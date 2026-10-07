@@ -1,5 +1,7 @@
 import 'package:bela_blok/screens/main_navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:bela_blok/theme/theme.dart';
+import 'package:bela_blok/theme/util.dart';
 
 void main() {
   runApp(const BelaBlok());
@@ -15,21 +17,13 @@ class BelaBlok extends StatefulWidget {
 class _BelaBlokState extends State<BelaBlok> {
   var _themeMode = ThemeMode.system;
 
-  @override
-  void initState() {
-    super.initState();
-
-    final brightness =
-        WidgetsBinding.instance.platformDispatcher.platformBrightness;
-
-    _themeMode = brightness == Brightness.dark
-        ? ThemeMode.dark
-        : ThemeMode.light;
-  }
-
   void _toggleTheme() {
     setState(() {
-      _themeMode = (_themeMode == ThemeMode.dark)
+      final currentBrightness = _themeMode == ThemeMode.system
+          ? View.of(context).platformDispatcher.platformBrightness
+          : (_themeMode == ThemeMode.dark ? Brightness.dark : Brightness.light);
+
+      _themeMode = currentBrightness == Brightness.dark
           ? ThemeMode.light
           : ThemeMode.dark;
     });
@@ -37,20 +31,15 @@ class _BelaBlokState extends State<BelaBlok> {
 
   @override
   Widget build(BuildContext context) {
+    TextTheme textTheme = createTextTheme(context, "Inter", "Inter Tight");
+    MaterialTheme theme = MaterialTheme(textTheme);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Bela Blok',
       themeMode: _themeMode,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF98BB6C),
-        brightness: Brightness.light,
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF98BB6C),
-        brightness: Brightness.dark,
-      ),
+      theme: theme.light(),
+      darkTheme: theme.dark(),
       home: MainNavigation(onThemeToggle: _toggleTheme),
     );
   }
