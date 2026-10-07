@@ -19,21 +19,22 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   List<Round> _rounds = [];
-  int _team1Points = 0;
-  int _team2Points = 0;
+  late Game _game;
   bool _isLoading = false;
   bool _isFabVisible = true;
 
   @override
   void initState() {
     super.initState();
+    _game = widget.game;
     loadRounds();
   }
 
   Future<void> loadRounds() async {
     setState(() => _isLoading = true);
 
-    final rounds = await DatabaseHelper.instance.getRoundsForGame(widget.game);
+    final rounds = await DatabaseHelper.instance.getRoundsForGame(_game);
+    final game = await DatabaseHelper.instance.getGame(_game.id!);
 
     if (!mounted) return;
 
@@ -41,19 +42,9 @@ class _GameScreenState extends State<GameScreen> {
       (r1, r2) => (r1.roundNumber ?? 0).compareTo(r2.roundNumber ?? 0),
     );
 
-    final int team1Points = rounds.fold(
-      0,
-      (sum, round) => sum + round.team1Points,
-    );
-    final int team2Points = rounds.fold(
-      0,
-      (sum, round) => sum + round.team2Points,
-    );
-
     setState(() {
       _rounds = rounds;
-      _team1Points = team1Points;
-      _team2Points = team2Points;
+      _game = game ?? _game;
       _isLoading = false;
     });
   }
@@ -78,7 +69,7 @@ class _GameScreenState extends State<GameScreen> {
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      "$_team1Points",
+                      "${_game.team1Points}",
                       style: textTheme.displaySmall,
                       textAlign: TextAlign.center,
                     ),
@@ -94,7 +85,7 @@ class _GameScreenState extends State<GameScreen> {
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      "$_team2Points",
+                      "${_game.team2Points}",
                       style: textTheme.displaySmall,
                       textAlign: TextAlign.center,
                     ),
@@ -104,14 +95,16 @@ class _GameScreenState extends State<GameScreen> {
             ],
           ),
         ),
-        floatingActionButton: AnimatedSlide(
-          duration: const Duration(milliseconds: 200),
-          offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
-          child: FloatingActionButton(
-            onPressed: _openAddRoundDialog,
-            child: const Icon(Symbols.add_rounded, fill: 1),
-          ),
-        ),
+        floatingActionButton: _game.isFinished
+            ? null
+            : AnimatedSlide(
+                duration: const Duration(milliseconds: 200),
+                offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
+                child: FloatingActionButton(
+                  onPressed: _openAddRoundDialog,
+                  child: const Icon(Symbols.add_rounded, fill: 1),
+                ),
+              ),
         body: NotificationListener<UserScrollNotification>(
           onNotification: (notification) {
             if (notification.direction == ScrollDirection.reverse &&
@@ -173,7 +166,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _openAddRoundDialog() async {
-    final bool? isAdded = await showRoundDialog(context, widget.game);
+    final bool? isAdded = await showRoundDialog(context, _game);
 
     if (isAdded == true && mounted) {
       await loadRounds();

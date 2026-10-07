@@ -176,30 +176,33 @@ class _RoundDialogState extends State<RoundDialog> {
             _buildCallingTeamField(context),
 
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildCardPointsField(
-                    context,
-                    "MI Bodovi",
-                    _team1Controller,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildCardPointsField(
+                      context,
+                      "MI Bodovi",
+                      _team1Controller,
+                    ),
                   ),
-                ),
-                const VerticalDivider(width: 32),
-                Expanded(
-                  child: _buildCardPointsField(
-                    context,
-                    "VI Bodovi",
-                    _team2Controller,
+                  const VerticalDivider(width: 32),
+                  Expanded(
+                    child: _buildCardPointsField(
+                      context,
+                      "VI Bodovi",
+                      _team2Controller,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
 
-            const Divider(height: 32),
+            const Divider(height: 48),
             _buildMeldField(context),
 
-            const Divider(height: 32),
+            const Divider(height: 48),
             _buildStigljaTeamField(context),
 
             if (_errorMessage != null) ...[
@@ -283,10 +286,11 @@ class _RoundDialogState extends State<RoundDialog> {
           keyboardType: TextInputType.number,
           enabled: _stigljaTeam == 0,
           textAlign: TextAlign.center,
-          style: textTheme.headlineLarge,
+          style: textTheme.headlineMedium,
           decoration: InputDecoration(
-            hintText: "0",
             border: OutlineInputBorder(),
+            hintText: "0",
+            errorMaxLines: 3,
           ),
           validator: (points) => _validateCardPoints(points),
         ),

@@ -164,6 +164,37 @@ class DatabaseHelper {
     return maps.map((map) => Game.fromMap(map)).toList();
   }
 
+  Future<Game?> getGame(int id) async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      """
+      SELECT
+        g.id, g.team1Points, g.team2Points, g.target, g.updatedAt,
+        p1.id as p1Id, p1.name as p1Name, p1.numGamesPlayed as p1NumGamesPlayed, p1.numWins as p1NumWins,
+        p2.id as p2Id, p2.name as p2Name, p2.numGamesPlayed as p2NumGamesPlayed, p2.numWins as p2NumWins,
+        p3.id as p3Id, p3.name as p3Name, p3.numGamesPlayed as p3NumGamesPlayed, p3.numWins as p3NumWins,
+        p4.id as p4Id, p4.name as p4Name, p4.numGamesPlayed as p4NumGamesPlayed, p4.numWins as p4NumWins
+
+      FROM $tableGames g
+      JOIN $tablePlayers p1 ON g.player1id = p1.id
+      JOIN $tablePlayers p2 ON g.player2id = p2.id
+      JOIN $tablePlayers p3 ON g.player3id = p3.id
+      JOIN $tablePlayers p4 ON g.player4id = p4.id
+      WHERE g.id = ?
+
+      ORDER BY g.updatedAt DESC
+    """,
+      [id],
+    );
+
+    if (maps.isEmpty) {
+      return null;
+    }
+
+    return Game.fromMap(maps.first);
+  }
+
   Future<List<Game>> getActiveGames() async {
     final games = await getGames();
 
