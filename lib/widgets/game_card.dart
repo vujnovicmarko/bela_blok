@@ -77,10 +77,15 @@ class GameCard extends StatelessWidget {
                   label: const Text("Obriši"),
                 ),
                 TextButton.icon(
-                  style: TextButton.styleFrom(
-                    foregroundColor: colorScheme.onPrimary,
-                    backgroundColor: colorScheme.primary,
-                  ),
+                  style: game.isFinished
+                      ? TextButton.styleFrom(
+                          foregroundColor: colorScheme.onSecondary,
+                          backgroundColor: colorScheme.secondary,
+                        )
+                      : TextButton.styleFrom(
+                          foregroundColor: colorScheme.onPrimary,
+                          backgroundColor: colorScheme.primary,
+                        ),
                   onPressed: () async {
                     await Navigator.push(
                       context,
