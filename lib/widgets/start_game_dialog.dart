@@ -31,6 +31,8 @@ class _StartGameDialogState extends State<StartGameDialog> {
   int? _player3Id;
   int? _player4Id;
 
+  String _playingDirection = AppPreferences.defaultPlayingDirection;
+
   bool _isLoadingPlayers = true;
   bool _isLoading = false;
 
@@ -59,6 +61,8 @@ class _StartGameDialogState extends State<StartGameDialog> {
 
     final target = await AppPreferences.getTarget();
 
+    final playingDirection = await AppPreferences.getPlayingDirection();
+
     if (!mounted) return;
 
     _targetController.text = target.toString();
@@ -69,6 +73,7 @@ class _StartGameDialogState extends State<StartGameDialog> {
       _player2Id = validPlayerIds.contains(player2Id) ? player2Id : null;
       _player3Id = validPlayerIds.contains(player3Id) ? player3Id : null;
       _player4Id = validPlayerIds.contains(player4Id) ? player4Id : null;
+      _playingDirection = playingDirection;
       _isLoadingPlayers = false;
     });
   }
@@ -129,46 +134,8 @@ class _StartGameDialogState extends State<StartGameDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Tim 1", style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            _buildPlayerDropdown(
-              label: "Igrač 1",
-              selectedPlayerId: _player1Id,
-              onChanged: (id) {
-                setState(() => _player1Id = id);
-                AppPreferences.setPlayer1Id(_player1Id);
-              },
-            ),
-            const SizedBox(height: 8),
-            _buildPlayerDropdown(
-              label: "Igrač 3",
-              selectedPlayerId: _player3Id,
-              onChanged: (id) {
-                setState(() => _player3Id = id);
-                AppPreferences.setPlayer3Id(_player3Id);
-              },
-            ),
-            const SizedBox(height: 32),
-            const Text("Tim 2", style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            _buildPlayerDropdown(
-              label: "Igrač 2",
-              selectedPlayerId: _player2Id,
-              onChanged: (id) {
-                setState(() => _player2Id = id);
-                AppPreferences.setPlayer2Id(_player2Id);
-              },
-            ),
-            const SizedBox(height: 8),
-            _buildPlayerDropdown(
-              label: "Igrač 4",
-              selectedPlayerId: _player4Id,
-              onChanged: (id) {
-                setState(() => _player4Id = id);
-                AppPreferences.setPlayer4Id(_player4Id);
-              },
-            ),
-            const SizedBox(height: 32),
+            _buildCardTable(context),
+            const SizedBox(height: 24),
             TextButton.icon(
               style: TextButton.styleFrom(
                 foregroundColor: colorScheme.onSecondary,
@@ -186,6 +153,98 @@ class _StartGameDialogState extends State<StartGameDialog> {
     );
   }
 
+  Widget _buildCardTable(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isCounterClockwise = _playingDirection == "counter-clockwise";
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildPlayerDropdown(
+                label: "Igrač 3",
+                selectedPlayerId: _player3Id,
+                onChanged: (id) {
+                  setState(() => _player3Id = id);
+                  AppPreferences.setPlayer3Id(id);
+                },
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildPlayerDropdown(
+                label: isCounterClockwise ? "Igrač 2" : "Igrač 4",
+                selectedPlayerId: isCounterClockwise ? _player2Id : _player4Id,
+                onChanged: (id) {
+                  if (isCounterClockwise) {
+                    setState(() => _player2Id = id);
+                    AppPreferences.setPlayer2Id(id);
+                  } else {
+                    setState(() => _player4Id = id);
+                    AppPreferences.setPlayer4Id(id);
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.only(left: 20, right: 28),
+          child: Container(
+            width: double.infinity,
+            height: 100,
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colorScheme.outline, width: 2),
+            ),
+            child: Center(
+              child: Icon(
+                Symbols.playing_cards_rounded,
+                fill: 1,
+                size: 32,
+                color: colorScheme.outline,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: _buildPlayerDropdown(
+                label: isCounterClockwise ? "Igrač 4" : "Igrač 2",
+                selectedPlayerId: isCounterClockwise ? _player4Id : _player2Id,
+                onChanged: (id) {
+                  if (isCounterClockwise) {
+                    setState(() => _player4Id = id);
+                    AppPreferences.setPlayer4Id(id);
+                  } else {
+                    setState(() => _player2Id = id);
+                    AppPreferences.setPlayer2Id(id);
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildPlayerDropdown(
+                label: "Igrač 1",
+                selectedPlayerId: _player1Id,
+                onChanged: (id) {
+                  setState(() => _player1Id = id);
+                  AppPreferences.setPlayer1Id(id);
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildPlayerDropdown({
     required String label,
     required int? selectedPlayerId,
@@ -199,15 +258,18 @@ class _StartGameDialogState extends State<StartGameDialog> {
       padding: const EdgeInsets.only(left: 4, right: 12),
       child: DropdownButtonFormField<int?>(
         initialValue: selectedPlayerId,
+        isExpanded: true,
         decoration: InputDecoration(
           labelText: label,
           border: const OutlineInputBorder(),
+          errorMaxLines: 2,
         ),
         items: [
           DropdownMenuItem<int?>(
             value: null,
             child: Text(
               "Nije odabran",
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(color: colorScheme.outline),
             ),
           ),
