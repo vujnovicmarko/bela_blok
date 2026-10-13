@@ -45,6 +45,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Igrači"),
@@ -55,7 +57,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
               onThemeToggle: widget.onThemeToggle,
               onAllDataDeleted: loadPlayers,
             ),
-            icon: const Icon(Symbols.settings_rounded, fill: 1),
+            icon: Icon(Symbols.settings_rounded, fill: isDarkMode ? 1 : 0),
           ),
         ],
       ),

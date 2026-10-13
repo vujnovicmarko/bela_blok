@@ -21,6 +21,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   List<Round> _rounds = [];
   late Game _game;
+
   bool _isLoading = false;
   bool _isFabVisible = true;
 

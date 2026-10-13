@@ -1,37 +1,21 @@
 import 'package:bela_blok/screens/main_navigation.dart';
+import 'package:bela_blok/services/app_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:bela_blok/theme/theme.dart';
 import 'package:bela_blok/theme/util.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-const String _themePrefKey = "theme_mode";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final prefs = await SharedPreferences.getInstance();
+  final themeMode = await AppPreferences.getThemeMode();
 
-  final savedThemeMode = prefs.getString(_themePrefKey);
-
-  final initialThemeMode = _parseThemeMode(savedThemeMode);
-
-  runApp(BelaBlok(initialThemeMode: initialThemeMode));
-}
-
-ThemeMode _parseThemeMode(String? themeMode) {
-  if (themeMode == "light") {
-    return ThemeMode.light;
-  } else if (themeMode == "dark") {
-    return ThemeMode.dark;
-  } else {
-    return ThemeMode.system;
-  }
+  runApp(BelaBlok(themeMode: themeMode));
 }
 
 class BelaBlok extends StatefulWidget {
-  final ThemeMode initialThemeMode;
+  final ThemeMode themeMode;
 
-  const BelaBlok({super.key, required this.initialThemeMode});
+  const BelaBlok({super.key, required this.themeMode});
 
   @override
   State<BelaBlok> createState() => _BelaBlokState();
@@ -43,7 +27,7 @@ class _BelaBlokState extends State<BelaBlok> {
   @override
   void initState() {
     super.initState();
-    _themeMode = widget.initialThemeMode;
+    _themeMode = widget.themeMode;
   }
 
   Future<void> _toggleTheme() async {
@@ -59,8 +43,7 @@ class _BelaBlokState extends State<BelaBlok> {
       _themeMode = newThemeMode;
     });
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themePrefKey, newThemeMode.name);
+    await AppPreferences.setThemeMode(newThemeMode);
   }
 
   @override

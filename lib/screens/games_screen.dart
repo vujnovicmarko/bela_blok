@@ -1,6 +1,7 @@
 import 'package:bela_blok/database/database_helper.dart';
 import 'package:bela_blok/models/game.dart';
 import 'package:bela_blok/screens/game_screen.dart';
+import 'package:bela_blok/services/app_preferences.dart';
 import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/expandable_section_header.dart';
 import 'package:bela_blok/widgets/game_card.dart';
@@ -9,7 +10,6 @@ import 'package:bela_blok/widgets/start_game_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class GamesScreen extends StatefulWidget {
   final void Function() onThemeToggle;
@@ -24,32 +24,52 @@ class _GamesScreenState extends State<GamesScreen> {
   List<Game> _activeGames = [];
   List<Game> _finishedGames = [];
 
-  bool _isActiveGamesExpanded = true;
-  bool _isFinishedGamesExpanded = false;
+  bool _isActiveGamesExpanded = AppPreferences.defaultIsActiveGamesExpanded;
+  bool _isFinishedGamesExpanded = AppPreferences.defaultIsFinishedGamesExpanded;
 
   bool _isLoading = false;
   bool _isFabVisible = true;
 
-  static const String _isActiveGamesExpandedKey = "is_active_games_expanded";
-  static const String _isFinishedGamesExpandedKey =
-      "is_finished_games_expanded";
-
   @override
   void initState() {
     super.initState();
-    _loadExpandedStates();
-    loadGames();
+    _loadData();
   }
 
-  Future<void> _loadExpandedStates() async {
-    final prefs = await SharedPreferences.getInstance();
+  Future<void> _loadData() async {
+    if (_activeGames.isEmpty && _finishedGames.isEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
+
+    final isActiveGamesExpanded =
+        await AppPreferences.getIsActiveGamesExpanded();
+    final isFinishedGamesExpanded =
+        await AppPreferences.getIsFinishedGamesExpanded();
+    final activeGames = await DatabaseHelper.instance.getActiveGames();
+    final finishedGames = await DatabaseHelper.instance.getFinishedGames();
 
     if (!mounted) return;
 
     setState(() {
-      _isActiveGamesExpanded = prefs.getBool(_isActiveGamesExpandedKey) ?? true;
-      _isFinishedGamesExpanded =
-          prefs.getBool(_isFinishedGamesExpandedKey) ?? false;
+      _isActiveGamesExpanded = isActiveGamesExpanded;
+      _isFinishedGamesExpanded = isFinishedGamesExpanded;
+      _activeGames = activeGames;
+      _finishedGames = finishedGames;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> loadGames() async {
+    final activeGames = await DatabaseHelper.instance.getActiveGames();
+    final finishedGames = await DatabaseHelper.instance.getFinishedGames();
+
+    if (!mounted) return;
+
+    setState(() {
+      _activeGames = activeGames;
+      _finishedGames = finishedGames;
     });
   }
 
@@ -60,9 +80,7 @@ class _GamesScreenState extends State<GamesScreen> {
       _isActiveGamesExpanded = newIsActiveGamesExpanded;
     });
 
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setBool(_isActiveGamesExpandedKey, newIsActiveGamesExpanded);
+    await AppPreferences.setIsActiveGamesExpanded(newIsActiveGamesExpanded);
   }
 
   Future<void> _toggleIsFinishedGamesExpanded() async {
@@ -72,33 +90,13 @@ class _GamesScreenState extends State<GamesScreen> {
       _isFinishedGamesExpanded = newIsFinishedGamesExpanded;
     });
 
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setBool(
-      _isFinishedGamesExpandedKey,
-      newIsFinishedGamesExpanded,
-    );
-  }
-
-  Future<void> loadGames() async {
-    if (_activeGames.isEmpty && _finishedGames.isEmpty) {
-      setState(() {
-        _isLoading = true;
-      });
-    }
-
-    final activeGames = await DatabaseHelper.instance.getActiveGames();
-    final finishedGames = await DatabaseHelper.instance.getFinishedGames();
-
-    setState(() {
-      _activeGames = activeGames;
-      _finishedGames = finishedGames;
-      _isLoading = false;
-    });
+    await AppPreferences.setIsFinishedGamesExpanded(newIsFinishedGamesExpanded);
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Partije"),
@@ -109,7 +107,7 @@ class _GamesScreenState extends State<GamesScreen> {
               onThemeToggle: widget.onThemeToggle,
               onAllDataDeleted: loadGames,
             ),
-            icon: const Icon(Symbols.settings_rounded, fill: 1),
+            icon: Icon(Symbols.settings_rounded, fill: isDarkMode ? 1 : 0),
           ),
         ],
       ),

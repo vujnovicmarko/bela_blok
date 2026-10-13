@@ -1,10 +1,10 @@
 import 'package:bela_blok/database/database_helper.dart';
 import 'package:bela_blok/models/game.dart';
 import 'package:bela_blok/models/player.dart';
+import 'package:bela_blok/services/app_preferences.dart';
 import 'package:bela_blok/widgets/add_player_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 Future<Game?> showStartGameDialog(BuildContext context) async {
   return await showDialog<Game>(
@@ -31,12 +31,6 @@ class _StartGameDialogState extends State<StartGameDialog> {
   int? _player3Id;
   int? _player4Id;
 
-  static const String _player1IdKey = "player1_id";
-  static const String _player2IdKey = "player2_id";
-  static const String _player3IdKey = "player3_id";
-  static const String _player4IdKey = "player4_id";
-  static const String _targetKey = "target";
-
   bool _isLoadingPlayers = true;
   bool _isLoading = false;
 
@@ -55,22 +49,19 @@ class _StartGameDialogState extends State<StartGameDialog> {
   }
 
   Future<void> _loadData() async {
-    final prefs = await SharedPreferences.getInstance();
     final players = await DatabaseHelper.instance.getPlayers();
     final validPlayerIds = players.map((player) => player.id).toSet();
 
-    final player1Id = prefs.getInt(_player1IdKey);
-    final player2Id = prefs.getInt(_player2IdKey);
-    final player3Id = prefs.getInt(_player3IdKey);
-    final player4Id = prefs.getInt(_player4IdKey);
+    final player1Id = await AppPreferences.getPlayer1Id();
+    final player2Id = await AppPreferences.getPlayer2Id();
+    final player3Id = await AppPreferences.getPlayer3Id();
+    final player4Id = await AppPreferences.getPlayer4Id();
 
-    final target = prefs.getInt(_targetKey);
+    final target = await AppPreferences.getTarget();
 
     if (!mounted) return;
 
-    if (target != null) {
-      _targetController.text = target.toString();
-    }
+    _targetController.text = target.toString();
 
     setState(() {
       _allPlayers = players;
@@ -80,22 +71,6 @@ class _StartGameDialogState extends State<StartGameDialog> {
       _player4Id = validPlayerIds.contains(player4Id) ? player4Id : null;
       _isLoadingPlayers = false;
     });
-  }
-
-  Future<void> _savePlayerId(String key, int? id) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    if (id != null) {
-      await prefs.setInt(key, id);
-    } else {
-      await prefs.remove(key);
-    }
-  }
-
-  Future<void> _saveTarget(int target) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setInt(_targetKey, target);
   }
 
   List<Player> _getAvailablePlayers(int? selectedPlayerId) {
@@ -161,7 +136,7 @@ class _StartGameDialogState extends State<StartGameDialog> {
               selectedPlayerId: _player1Id,
               onChanged: (id) {
                 setState(() => _player1Id = id);
-                _savePlayerId(_player1IdKey, id);
+                AppPreferences.setPlayer1Id(_player1Id);
               },
             ),
             const SizedBox(height: 8),
@@ -170,7 +145,7 @@ class _StartGameDialogState extends State<StartGameDialog> {
               selectedPlayerId: _player3Id,
               onChanged: (id) {
                 setState(() => _player3Id = id);
-                _savePlayerId(_player3IdKey, id);
+                AppPreferences.setPlayer3Id(_player3Id);
               },
             ),
             const SizedBox(height: 32),
@@ -181,7 +156,7 @@ class _StartGameDialogState extends State<StartGameDialog> {
               selectedPlayerId: _player2Id,
               onChanged: (id) {
                 setState(() => _player2Id = id);
-                _savePlayerId(_player2IdKey, id);
+                AppPreferences.setPlayer2Id(_player2Id);
               },
             ),
             const SizedBox(height: 8),
@@ -190,7 +165,7 @@ class _StartGameDialogState extends State<StartGameDialog> {
               selectedPlayerId: _player4Id,
               onChanged: (id) {
                 setState(() => _player4Id = id);
-                _savePlayerId(_player4IdKey, id);
+                AppPreferences.setPlayer4Id(_player4Id);
               },
             ),
             const SizedBox(height: 32),
@@ -265,11 +240,11 @@ class _StartGameDialogState extends State<StartGameDialog> {
           border: const OutlineInputBorder(),
           errorText: _errorMessage,
         ),
-        onChanged: (target) {
+        onChanged: (target) async {
           final parsedTarget = int.tryParse(target.trim());
 
           if (parsedTarget != null && parsedTarget > 0) {
-            _saveTarget(parsedTarget);
+            await AppPreferences.setTarget(parsedTarget);
           }
         },
         validator: (target) {
@@ -358,16 +333,16 @@ class _StartGameDialogState extends State<StartGameDialog> {
     if (newPlayer != null) {
       if (_player1Id == null) {
         setState(() => _player1Id = newPlayer.id);
-        _savePlayerId(_player1IdKey, newPlayer.id);
+        AppPreferences.setPlayer1Id(newPlayer.id);
       } else if (_player3Id == null) {
         setState(() => _player3Id = newPlayer.id);
-        _savePlayerId(_player3IdKey, newPlayer.id);
+        AppPreferences.setPlayer3Id(newPlayer.id);
       } else if (_player2Id == null) {
         setState(() => _player2Id = newPlayer.id);
-        _savePlayerId(_player2IdKey, newPlayer.id);
+        AppPreferences.setPlayer2Id(newPlayer.id);
       } else if (_player4Id == null) {
         setState(() => _player4Id = newPlayer.id);
-        _savePlayerId(_player4IdKey, newPlayer.id);
+        AppPreferences.setPlayer4Id(newPlayer.id);
       }
     }
   }

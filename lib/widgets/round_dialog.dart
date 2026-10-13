@@ -222,7 +222,7 @@ class _RoundDialogState extends State<RoundDialog> {
   Widget _buildCallingTeamField(BuildContext context) {
     return Column(
       children: [
-        const Text("Tko je zvao:"),
+        const Text("Tko je zvao"),
         const SizedBox(height: 4),
         SegmentedButton<int>(
           segments: const [
@@ -242,7 +242,7 @@ class _RoundDialogState extends State<RoundDialog> {
   Widget _buildStigljaTeamField(BuildContext context) {
     return Column(
       children: [
-        const Text("Štiglja:"),
+        const Text("Štiglja"),
         const SizedBox(height: 4),
         SegmentedButton<int>(
           segments: const [
