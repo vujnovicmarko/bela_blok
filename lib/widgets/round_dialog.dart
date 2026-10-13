@@ -144,7 +144,9 @@ class _RoundDialogState extends State<RoundDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 16),
-      title: const Text("Upiši rundu"),
+      title: widget.round != null
+          ? Text("Prepravi rundu")
+          : Text("Upiši rundu"),
       content: _buildContent(context),
       actions: [
         TextButton(
@@ -159,7 +161,7 @@ class _RoundDialogState extends State<RoundDialog> {
                   height: 18,
                   child: CircularProgressIndicator(),
                 )
-              : const Text("Upiši"),
+              : (widget.round != null ? Text("Prepravi") : Text("Upiši")),
         ),
       ],
     );

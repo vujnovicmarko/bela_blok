@@ -132,21 +132,33 @@ class _StartGameDialogState extends State<StartGameDialog> {
       child: Form(
         key: _formKey,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildCardTable(context),
             const SizedBox(height: 24),
-            TextButton.icon(
-              style: TextButton.styleFrom(
-                foregroundColor: colorScheme.onSecondary,
-                backgroundColor: colorScheme.secondary,
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 28),
+              child: SizedBox(
+                width: double.infinity,
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    foregroundColor: colorScheme.onSecondary,
+                    backgroundColor: colorScheme.secondary,
+                  ),
+                  onPressed: () => _openAddPlayerDialog(),
+                  icon: const Icon(Symbols.person_add_rounded, fill: 1),
+                  label: const Text("Dodaj igrača"),
+                ),
               ),
-              onPressed: () => _openAddPlayerDialog(),
-              icon: const Icon(Symbols.person_add_rounded, fill: 1),
-              label: const Text("Dodaj igrača"),
             ),
-            const Divider(height: 64),
-            _buildTargetField(),
+            const Divider(height: 48),
+            Row(
+              children: [
+                Expanded(child: _buildTargetField()),
+                const SizedBox(width: 16),
+                const Expanded(child: SizedBox()),
+              ],
+            ),
           ],
         ),
       ),
@@ -189,7 +201,7 @@ class _StartGameDialogState extends State<StartGameDialog> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
         Padding(
           padding: const EdgeInsets.only(left: 20, right: 28),
           child: Container(
@@ -210,7 +222,7 @@ class _StartGameDialogState extends State<StartGameDialog> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
         Row(
           children: [
             Expanded(
