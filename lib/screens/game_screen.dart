@@ -5,7 +5,6 @@ import 'package:bela_blok/widgets/round_dialog.dart';
 import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/round_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_confetti/flutter_confetti.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -23,7 +22,6 @@ class _GameScreenState extends State<GameScreen> {
   late Game _game;
 
   bool _isLoading = false;
-  bool _isFabVisible = true;
 
   @override
   void initState() {
@@ -44,8 +42,12 @@ class _GameScreenState extends State<GameScreen> {
       (r1, r2) => (r1.roundNumber ?? 0).compareTo(r2.roundNumber ?? 0),
     );
 
+    final updatedRounds = rounds.map((round) {
+      return round.copyWith(game: game);
+    }).toList();
+
     setState(() {
-      _rounds = rounds;
+      _rounds = updatedRounds;
       _game = game ?? _game;
       _isLoading = false;
     });
@@ -98,86 +100,86 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ),
         floatingActionButton: _game.isFinished
-            ? AnimatedSlide(
-                duration: const Duration(milliseconds: 200),
-                offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
-                child: FloatingActionButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Icon(
-                    Symbols.subdirectory_arrow_left_rounded,
-                    fill: 1,
-                  ),
+            ? FloatingActionButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Icon(
+                  Symbols.subdirectory_arrow_left_rounded,
+                  fill: 1,
                 ),
               )
-            : AnimatedSlide(
-                duration: const Duration(milliseconds: 200),
-                offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
-                child: FloatingActionButton(
-                  onPressed: _openAddRoundDialog,
-                  child: const Icon(Symbols.add_rounded, fill: 1),
-                ),
+            : FloatingActionButton(
+                onPressed: _openAddRoundDialog,
+                child: const Icon(Symbols.add_rounded, fill: 1),
               ),
-        body: NotificationListener<UserScrollNotification>(
-          onNotification: (notification) {
-            if (notification.direction == ScrollDirection.reverse &&
-                _isFabVisible) {
-              setState(() {
-                _isFabVisible = false;
-              });
-            } else if (notification.direction == ScrollDirection.forward &&
-                !_isFabVisible) {
-              setState(() {
-                _isFabVisible = true;
-              });
-            }
-            return true;
-          },
-          child: _buildBody(),
-        ),
+        body: _buildBody(),
       ),
     );
   }
 
   Widget _buildBody() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_rounds.isEmpty) {
-      return EmptyScreenPlaceholder(
-        icon: Symbols.playing_cards_rounded,
-        title: "Nema odigranih rundi",
-        subtitle: TextSpan(
-          children: [
-            const TextSpan(text: "Pritisni "),
-            WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: Padding(
-                padding: const EdgeInsets.all(2),
-                child: Icon(Symbols.add_rounded, fill: 1),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: _rounds.isEmpty
+              ? EmptyScreenPlaceholder(
+                  icon: Symbols.playing_cards_rounded,
+                  title: "Nema odigranih rundi",
+                  subtitle: TextSpan(
+                    children: [
+                      const TextSpan(text: "Pritisni "),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Icon(Symbols.add_rounded, fill: 1),
+                        ),
+                      ),
+                      const TextSpan(text: " za upis runde"),
+                    ],
+                  ),
+                  onRefresh: loadRounds,
+                )
+              : RefreshIndicator(
+                  onRefresh: loadRounds,
+                  child: ListView.builder(
+                    itemCount: _rounds.length,
+                    padding: const EdgeInsets.all(8),
+                    itemBuilder: (context, index) {
+                      final round = _rounds[index];
+                      return RoundCard(
+                        round: round,
+                        loadRounds: loadRounds,
+                        gameFinished: _game.isFinished,
+                      );
+                    },
+                  ),
+                ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: _game.isFinished ? null : () {},
+              icon: const Icon(Symbols.shuffle_rounded, fill: 1, size: 20),
+              label: Text(
+                "Miješa: ${_game.currentDealer.name}",
+                style: TextStyle(fontSize: 16),
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: colorScheme.tertiary,
               ),
             ),
-            const TextSpan(text: " za upis runde"),
-          ],
+          ),
         ),
-        onRefresh: loadRounds,
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: loadRounds,
-      child: ListView.builder(
-        itemCount: _rounds.length,
-        padding: const EdgeInsets.all(8),
-        itemBuilder: (context, index) {
-          final round = _rounds[index];
-          return RoundCard(
-            round: round,
-            loadRounds: loadRounds,
-            gameFinished: _game.isFinished,
-          );
-        },
-      ),
+      ],
     );
   }
 

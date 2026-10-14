@@ -9,6 +9,7 @@ class Game {
   final int team1Points;
   final int team2Points;
   final int target;
+  final Player currentDealer;
   final String updatedAt;
 
   const Game({
@@ -20,6 +21,7 @@ class Game {
     this.team1Points = 0,
     this.team2Points = 0,
     this.target = 1001,
+    required this.currentDealer,
     required this.updatedAt,
   });
 
@@ -71,6 +73,12 @@ class Game {
       team1Points: map["team1Points"] as int? ?? 0,
       team2Points: map["team2Points"] as int? ?? 0,
       target: map["target"] as int? ?? 1001,
+      currentDealer: Player(
+        id: map["currentDealerId"] as int?,
+        name: map["currentDealerName"] as String,
+        numGamesPlayed: map["currentDealerNumGamesPlayed"] as int? ?? 0,
+        numWins: map["currentDealerNumWins"] as int? ?? 0,
+      ),
       updatedAt: map["updatedAt"] as String,
     );
   }
@@ -85,6 +93,7 @@ class Game {
       "team1Points": team1Points,
       "team2Points": team2Points,
       "target": target,
+      "currentDealerId": currentDealer.id,
       "updatedAt": updatedAt,
     };
   }
@@ -98,6 +107,7 @@ class Game {
     int? team1Points,
     int? team2Points,
     int? target,
+    Player? currentDealer,
     String? updatedAt,
   }) {
     return Game(
@@ -109,6 +119,7 @@ class Game {
       team1Points: team1Points ?? this.team1Points,
       team2Points: team2Points ?? this.team2Points,
       target: target ?? this.target,
+      currentDealer: currentDealer ?? this.currentDealer,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }

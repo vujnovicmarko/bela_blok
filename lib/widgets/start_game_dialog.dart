@@ -364,12 +364,24 @@ class _StartGameDialogState extends State<StartGameDialog> {
         (player) => player.id == _player4Id,
       );
 
+      final startingDealer = await AppPreferences.getStartingDealer();
+      Player currentDealer;
+
+      if (startingDealer == "random") {
+        final players = [player1, player2, player3, player4];
+        players.shuffle();
+        currentDealer = players.first;
+      } else {
+        currentDealer = player1;
+      }
+
       final game = Game(
         player1: player1,
         player2: player2,
         player3: player3,
         player4: player4,
         target: target,
+        currentDealer: currentDealer,
         updatedAt: DateTime.now().toIso8601String(),
       );
 
@@ -408,12 +420,12 @@ class _StartGameDialogState extends State<StartGameDialog> {
       if (_player1Id == null) {
         setState(() => _player1Id = newPlayer.id);
         AppPreferences.setPlayer1Id(newPlayer.id);
-      } else if (_player3Id == null) {
-        setState(() => _player3Id = newPlayer.id);
-        AppPreferences.setPlayer3Id(newPlayer.id);
       } else if (_player2Id == null) {
         setState(() => _player2Id = newPlayer.id);
         AppPreferences.setPlayer2Id(newPlayer.id);
+      } else if (_player3Id == null) {
+        setState(() => _player3Id = newPlayer.id);
+        AppPreferences.setPlayer3Id(newPlayer.id);
       } else if (_player4Id == null) {
         setState(() => _player4Id = newPlayer.id);
         AppPreferences.setPlayer4Id(newPlayer.id);

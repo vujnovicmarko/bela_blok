@@ -55,6 +55,7 @@ class DatabaseHelper {
         team1Points INTEGER NOT NULL DEFAULT 0,
         team2Points INTEGER NOT NULL DEFAULT 0,
         target INTEGER NOT NULL DEFAULT 1001,
+        currentDealerId INTEGER NOT NULL REFERENCES $tablePlayers(id) ON DELETE CASCADE,
         updatedAt TEXT NOT NULL
       )
     """);
@@ -163,13 +164,16 @@ class DatabaseHelper {
         p1.id as p1Id, p1.name as p1Name,
         p2.id as p2Id, p2.name as p2Name,
         p3.id as p3Id, p3.name as p3Name,
-        p4.id as p4Id, p4.name as p4Name
+        p4.id as p4Id, p4.name as p4Name,
+        currentDealer.id as currentDealerId, currentDealer.name as currentDealerName
+
 
       FROM $tableGames g
       JOIN $tablePlayers p1 ON g.player1id = p1.id
       JOIN $tablePlayers p2 ON g.player2id = p2.id
       JOIN $tablePlayers p3 ON g.player3id = p3.id
       JOIN $tablePlayers p4 ON g.player4id = p4.id
+      JOIN $tablePlayers currentDealer ON g.currentDealerId = currentDealer.id
 
       ORDER BY g.updatedAt DESC
     """);
@@ -187,13 +191,15 @@ class DatabaseHelper {
         p1.id as p1Id, p1.name as p1Name,
         p2.id as p2Id, p2.name as p2Name,
         p3.id as p3Id, p3.name as p3Name,
-        p4.id as p4Id, p4.name as p4Name
+        p4.id as p4Id, p4.name as p4Name,
+        currentDealer.id as currentDealerId, currentDealer.name as currentDealerName
 
       FROM $tableGames g
       JOIN $tablePlayers p1 ON g.player1id = p1.id
       JOIN $tablePlayers p2 ON g.player2id = p2.id
       JOIN $tablePlayers p3 ON g.player3id = p3.id
       JOIN $tablePlayers p4 ON g.player4id = p4.id
+      JOIN $tablePlayers currentDealer ON g.currentDealerId = currentDealer.id
       WHERE g.id = ?
 
       ORDER BY g.updatedAt DESC
@@ -286,9 +292,18 @@ class DatabaseHelper {
       final int team2TotalPoints =
           (totals.first["team2TotalPoints"] as int?) ?? 0;
 
+      final game = round.game;
+      final players = [game.player1, game.player2, game.player3, game.player4];
+      final currentIndex = players.indexWhere(
+        (p) => p.id == game.currentDealer.id,
+      );
+      final nextIndex = (currentIndex != -1) ? (currentIndex + 1) % 4 : 0;
+      final nextDealer = players[nextIndex];
+
       final updatedGame = round.game.copyWith(
         team1Points: team1TotalPoints,
         team2Points: team2TotalPoints,
+        currentDealer: nextDealer,
         updatedAt: DateTime.now().toIso8601String(),
       );
 
@@ -381,9 +396,18 @@ class DatabaseHelper {
       final int team2TotalPoints =
           (totals.first["team2TotalPoints"] as int?) ?? 0;
 
+      final game = round.game;
+      final players = [game.player1, game.player2, game.player3, game.player4];
+      final currentIndex = players.indexWhere(
+        (p) => p.id == game.currentDealer.id,
+      );
+      final prevIndex = (currentIndex != -1) ? (currentIndex - 1 + 4) % 4 : 0;
+      final prevDealer = players[prevIndex];
+
       final updatedGame = round.game.copyWith(
         team1Points: team1TotalPoints,
         team2Points: team2TotalPoints,
+        currentDealer: prevDealer,
         updatedAt: DateTime.now().toIso8601String(),
       );
 
