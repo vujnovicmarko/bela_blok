@@ -2,7 +2,6 @@ import 'package:bela_blok/screens/main_navigation.dart';
 import 'package:bela_blok/services/app_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:bela_blok/theme/theme.dart';
-import 'package:bela_blok/theme/util.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,8 +47,7 @@ class _BelaBlokState extends State<BelaBlok> {
 
   @override
   Widget build(BuildContext context) {
-    TextTheme textTheme = createTextTheme(context, "Inter", "Inter Tight");
-    MaterialTheme theme = MaterialTheme(textTheme);
+    MaterialTheme theme = MaterialTheme(ThemeData.light().textTheme);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
