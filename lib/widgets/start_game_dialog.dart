@@ -132,7 +132,6 @@ class _StartGameDialogState extends State<StartGameDialog> {
       child: Form(
         key: _formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildCardTable(context),
             const SizedBox(height: 24),

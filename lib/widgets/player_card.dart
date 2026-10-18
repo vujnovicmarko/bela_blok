@@ -21,8 +21,12 @@ class PlayerCard extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.only(left: 16, right: 8),
         title: Text(player.name),
-        subtitle: Text(
-          "Partije: ${player.numGamesPlayed}   Postotak pobjeda: ${player.winPercentage}",
+        subtitle: Row(
+          children: [
+            Text("Partije: ${player.numGamesPlayed}"),
+            const SizedBox(width: 12),
+            Text("Postotak pobjeda: ${player.winPercentage}"),
+          ],
         ),
         trailing: IconButton(
           onPressed: () => _openDeletePlayerDialog(context, player),

@@ -16,8 +16,10 @@ class GameCard extends StatelessWidget {
 
     final parsedDateTime = DateTime.parse(game.updatedAt);
 
-    String formattedDateTime =
-        "${parsedDateTime.hour.toString().padLeft(2, '0')}:${parsedDateTime.minute.toString().padLeft(2, '0')}   "
+    String formattedTime =
+        "${parsedDateTime.hour.toString().padLeft(2, '0')}:${parsedDateTime.minute.toString().padLeft(2, '0')}";
+
+    String formattedDate =
         "${parsedDateTime.day.toString().padLeft(2, '0')}.${parsedDateTime.month.toString().padLeft(2, '0')}.${parsedDateTime.year.toString()}.";
 
     return Card(
@@ -26,7 +28,13 @@ class GameCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(formattedDateTime),
+            Row(
+              children: [
+                Text(formattedTime),
+                const SizedBox(width: 12),
+                Text(formattedDate),
+              ],
+            ),
             const SizedBox(height: 16),
             Row(
               children: [

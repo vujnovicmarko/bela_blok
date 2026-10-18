@@ -174,7 +174,7 @@ class _GamesScreenState extends State<GamesScreen> {
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   children: [
                     if (_activeGames.isNotEmpty) _buildActiveGames(),

@@ -1,6 +1,8 @@
 import 'package:bela_blok/database/database_helper.dart';
 import 'package:bela_blok/models/game.dart';
+import 'package:bela_blok/models/player.dart';
 import 'package:bela_blok/models/round.dart';
+import 'package:bela_blok/widgets/change_dealer_dialog.dart';
 import 'package:bela_blok/widgets/round_dialog.dart';
 import 'package:bela_blok/widgets/empty_screen_placeholder.dart';
 import 'package:bela_blok/widgets/round_card.dart';
@@ -57,62 +59,60 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          toolbarHeight: 100,
-          title: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      "MI",
-                      style: textTheme.displaySmall,
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      "${_game.team1Points}",
-                      style: textTheme.displaySmall,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        toolbarHeight: 100,
+        title: Row(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    "MI",
+                    style: textTheme.displaySmall,
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    "${_game.team1Points}",
+                    style: textTheme.displaySmall,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      "VI",
-                      style: textTheme.displaySmall,
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      "${_game.team2Points}",
-                      style: textTheme.displaySmall,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    "VI",
+                    style: textTheme.displaySmall,
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    "${_game.team2Points}",
+                    style: textTheme.displaySmall,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        floatingActionButton: _game.isFinished
-            ? FloatingActionButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Icon(
-                  Symbols.subdirectory_arrow_left_rounded,
-                  fill: 1,
-                ),
-              )
-            : FloatingActionButton(
-                onPressed: _openAddRoundDialog,
-                child: const Icon(Symbols.add_rounded, fill: 1),
-              ),
-        body: _buildBody(),
       ),
+      floatingActionButton: _game.isFinished
+          ? FloatingActionButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Icon(
+                Symbols.subdirectory_arrow_left_rounded,
+                fill: 1,
+              ),
+            )
+          : FloatingActionButton(
+              onPressed: _openAddRoundDialog,
+              child: const Icon(Symbols.add_rounded, fill: 1),
+            ),
+      body: SafeArea(child: _buildBody()),
     );
   }
 
@@ -167,14 +167,14 @@ class _GameScreenState extends State<GameScreen> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
-              onPressed: _game.isFinished ? null : () {},
+              onPressed: _game.isFinished ? null : _openChangeDealerDialog,
               icon: const Icon(Symbols.shuffle_rounded, fill: 1, size: 20),
               label: Text(
                 "Miješa: ${_game.currentDealer.name}",
                 style: TextStyle(fontSize: 16),
               ),
               style: TextButton.styleFrom(
-                foregroundColor: colorScheme.tertiary,
+                foregroundColor: colorScheme.secondary,
               ),
             ),
           ),
@@ -225,6 +225,20 @@ class _GameScreenState extends State<GameScreen> {
           ),
         );
       }
+    }
+  }
+
+  void _openChangeDealerDialog() async {
+    final Player? newDealer = await showChangeDealerDialog(context, _game);
+
+    if (newDealer != null &&
+        newDealer.id != _game.currentDealer.id &&
+        mounted) {
+      final updatedGame = _game.copyWith(currentDealer: newDealer);
+
+      await DatabaseHelper.instance.updateGame(updatedGame);
+
+      await loadRounds();
     }
   }
 }
