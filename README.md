@@ -73,7 +73,8 @@ Preuzmite najnoviju verziju aplikacije izravno za vaš Android uređaj:
 
 [![Download APK](https://img.shields.io/github/v/release/vujnovicmarko/bela_blok?label=Preuzmi%20APK&style=for-the-badge&color=2K8555)](https://github.com/vujnovicmarko/bela_blok/releases/latest)
 
-- 📱 **[Izravno preuzimanje APK datoteke](https://github.com/vujnovicmarko/bela_blok/releases/latest/download/app-arm64-v8a-release.apk)**
+- 📱 **[Preuzmi za moderne uređaje (Arm64)](https://github.com/vujnovicmarko/bela_blok/releases/latest/download/app-arm64-v8a-release.apk)** _(Preporučeno za 95% mobitela)_
+- 📂 Tražite verziju za starije uređaje ili emulatore? Pogledajte [sve dostupne verzije u Releases sekciji](https://github.com/vujnovicmarko/bela_blok/releases/latest).
 
 ### Provjera integriteta
 
