@@ -73,7 +73,7 @@ Preuzmite najnoviju verziju aplikacije izravno za vaš Android uređaj:
 
 [![Download APK](https://img.shields.io/github/v/release/vujnovicmarko/bela_blok?label=Preuzmi%20APK&style=for-the-badge&color=2K8555)](https://github.com/vujnovicmarko/bela_blok/releases/latest)
 
-- 📱 **[Izravno preuzimanje APK datoteke](https://github.com/vujnovicmarko/bela_blok/releases/latest/download/app-release.apk)**
+- 📱 **[Izravno preuzimanje APK datoteke](https://github.com/vujnovicmarko/bela_blok/releases/latest/download/app-arm64-v8a-release.apk)**
 
 ### Provjera integriteta
 
@@ -81,10 +81,10 @@ Kako biste bili sigurni da preuzeta datoteka nije oštećena, možete usporediti
 
 ```bash
 # macOS / Linux
-shasum -a 1 -c app-release.apk.sha1
+shasum -a 1 -c app-arm64-v8a-release.apk.sha1
 
 # Windows PowerShell
-(Get-FileHash app-release.apk -Algorithm SHA1).Hash
+(Get-FileHash app-arm64-v8a-release.apk -Algorithm SHA1).Hash
 ```
 
 ---
@@ -93,7 +93,7 @@ shasum -a 1 -c app-release.apk.sha1
 
 ```bash
 # Klonirajte repozitorij
-git clone [https://github.com/vujnovicmarko/bela_blok.git](https://github.com/vujnovicmarko/bela_blok.git)
+git clone https://github.com/vujnovicmarko/bela_blok.git
 
 # Uđite u direktorij
 cd bela_blok
@@ -102,5 +102,5 @@ cd bela_blok
 flutter pub get
 
 # Izradite Android APK
-flutter build apk --release
+flutter build apk --split-per-abi --release
 ```
