@@ -1,5 +1,5 @@
 name: bela_blok
-description: "A new Flutter project."
+description: "Aplikacija za bilježenje rezultata kartaške igre Bela"
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -27,7 +27,7 @@ flutter:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: false
-  image_path: "assets/icon/app_icon.png"
+  image_path: "assets/images/app_icon.png"
   adaptive_icon_background: "#98BB6C"
-  adaptive_icon_foreground: "assets/icon/app_icon.png"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
   min_sdk_android: 21
