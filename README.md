@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/images/app_icon.png" width="100" style="border-radius: 50%;" alt="Bela Blok Icon" />
+<img src="assets/images/circular_app_icon.png" width="100" alt="Bela Blok Icon" />
 
 # Bela Blok
 
